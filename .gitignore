@@ -1,0 +1,84 @@
+# ==========================================
+# 程式開發與虛擬環境 (Programming & Venv)
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# 測試與靜態分析
+htmlcov/
+.tosca/
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+*.cover
+.hypothesis/
+.nox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# ==========================================
+# 資料與本機資料庫 (Data & Databases)
+# ==========================================
+# 避免將龐大的原始資料、分析結果或資料庫誤傳至 Git
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.sqlite-journal
+
+# 如果是資料蒐集專案，可視情況忽略大體積資料檔：
+# *.csv
+# *.xlsx
+# *.tsv
+# *.json
+# 若需要保留特定設定檔，可使用驚嘆號排除忽略，例如：
+# !config.json
+
+# ==========================================
+# 編輯器與系統暫存 (IDE & OS)
+# ==========================================
+.idea/
+.vscode/
+.cursor/
+.obsidian/
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ==========================================
+# 專案運行日誌 (Logs)
+# ==========================================
+# 排除日誌目錄下的執行產出，但保留目錄本身
+Logs/*
+!Logs/.gitkeep
