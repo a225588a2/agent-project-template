@@ -31,3 +31,18 @@
 
 **重要決策與備忘**：
 - `[重大技術決定、參數微調理由或與使用者討論後的決策備忘]`
+
+---
+
+## 2026/06/19
+
+### 20260619-1 Initialize project structure and templates
+
+**變更摘要**：
+- 完成通用專案模板升級與實務回饋整合（包含 Agent.md、Target.md、ReadMe.md、Doc/ 及 Structure/ 模板更新）。
+- 新增 `Plan/GitGuide.md` 作為階段式揭露指引。
+- 新增 `Plan/FeedBack.md` 作為經驗回饋機制。
+
+**重要決策與備忘**：
+- 將專案模板初始化為 Git 儲存庫，並設定自訂 SSH 金鑰 `LaptopFork` 完成 GitHub 推送與託管。
+
