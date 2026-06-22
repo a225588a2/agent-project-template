@@ -30,7 +30,7 @@
 
 > [說明：如果專案有本機設定檔（如 config.json, settings.yaml），請在此列出其欄位定義與範例]
 
-- **檔案路徑**：`[例如：根目錄/Config.json]`
+- **檔案路徑**：`[例如：根目錄/config.json]`
 - **JSON 配置範例**：
   ```json
   {

@@ -25,7 +25,7 @@
 ### 合併衝突 (Merge Conflict)
 - 優先保留**最新且經過驗證的版本**，而非盲目選擇「ours」或「theirs」。
 - 衝突解決後，在 Commit 描述中明確標註衝突的檔案與選擇的策略。
-- 若衝突涉及 `Plan/` 下的文件（如 Process.md 或 Memory.md），應合併雙方內容而非覆蓋，因為這些檔案的紀錄是累積式的。
+- 若衝突涉及 `plan/` 下的文件（如 PROCESS.md 或 MEMORY.md），應合併雙方內容而非覆蓋，因為這些檔案的紀錄是累積式的。
 
 ### 常見錯誤處理
 - **`fatal: not a git repository`**：確認目前工作目錄是否正確，或是否已執行 `git init`。

@@ -10,20 +10,20 @@
 
 ```
 [專案根目錄]/
-├── Plan/                     # 必要：專案管理與規範
-├── Doc/                      # 必要：細部規格定義
-├── Structure/                # 必要：架構與關係藍圖
-├── ReadMe.md                 # 專案說明書
+├── plan/                     # 必要：專案管理與規範
+├── doc/                      # 必要：細部規格定義
+├── structure/                # 必要：架構與關係藍圖
+├── README.md                 # 專案說明書
 │
 ├── [以下為本專案啟用的參考/自訂目錄]
-├── Source/                   # 成品/原始碼存放區
-│   ├── Main.py               # 範例：應用程式啟動入口
-│   ├── DataCleaner.py        # 範例：資料前處理與過濾模組
-│   └── ConfigLoader.py       # 範例：設定檔讀取模組
+├── source/                   # 成品/原始碼存放區
+│   ├── main.py               # 範例：應用程式啟動入口
+│   ├── data-cleaner.py        # 範例：資料前處理與過濾模組
+│   └── config-loader.py       # 範例：設定檔讀取模組
 │
-└── Test/                     # 驗證/測試存放區
-    ├── TestDataCleaner.py    # 範例：針對 DataCleaner.py 的單元測試
-    └── TestConfigLoader.py   # 範例：針對 ConfigLoader.py 的單元測試
+└── test/                     # 驗證/測試存放區
+    ├── test-data-cleaner.py    # 範例：針對 data-cleaner.py 的單元測試
+    └── test-config-loader.py   # 範例：針對 config-loader.py 的單元測試
 ```
 
 ---
@@ -32,14 +32,14 @@
 
 > [說明：詳細列出各個物理檔案中主要類別、函式或文件的具體職責]
 
-### 🛠️ 組件一：`[例如：資料處理模組 - Source/DataCleaner.py]`
+### 🛠️ 組件一：`[例如：資料處理模組 - source/data-cleaner.py]`
 - **職責**：`[負責將輸入的原始文字進行降噪、過濾，並導出符合規範的格式]`
 - **核心函數/類別**：
   - `class RawDataProcessor`：封裝主處理程序。
   - `def clean_text(text: str) -> str`：移除特定符號並進行字元標準化。
 
-### 🛠️ 組件二：`[例如：設定管理模組 - Source/ConfigLoader.py]`
-- **職責**：`[負責讀取與解析 Config.json，提供執行緒安全的全域配置讀取]`
+### 🛠️ 組件二：`[例如：設定管理模組 - source/config-loader.py]`
+- **職責**：`[負責讀取與解析 config.json，提供執行緒安全的全域配置讀取]`
 
 ---
 
@@ -54,9 +54,9 @@ graph TD
     classDef subModule fill:#2e75b6,stroke:#1f4e79,stroke-width:2px,color:#fff;
 
     %% 節點定義
-    Main[Main.py<br/>啟動入口]:::entryPoint
-    Cleaner[DataCleaner.py<br/>資料清洗]:::subModule
-    Config[ConfigLoader.py<br/>設定檔載入]:::subModule
+    Main[main.py<br/>啟動入口]:::entryPoint
+    Cleaner[data-cleaner.py<br/>資料清洗]:::subModule
+    Config[config-loader.py<br/>設定檔載入]:::subModule
 
     %% 依賴關係
     Main --> Config
