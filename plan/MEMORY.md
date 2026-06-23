@@ -61,4 +61,17 @@
 **重要決策與備忘**：
 - 為了使專案更貼近現代專案與 LLM 處理的命名習慣，將命名邏輯由 UpperCamelCase 大駝峰法全面轉移至 kebab-case（一般程式碼/檔案）搭配 UPPER-CASE（核心政策/流程規範），以提升清晰度與一致性。
 
+---
+
+## 2026/06/24
+
+### 20260624-1 Add supreme directive and pre-flight checklist to AGENT.md
+
+**變更摘要**：
+- 於 `plan/AGENT.md` 最前端加入最高指導原則（先思考，再提問討論，再執行）。
+- 於 `plan/AGENT.md` 第 5 章與第 6 章加入操作前防禦性檢查 (Pre-flight Checklist) 與先讀後寫檔案編輯原則 (Read-before-Write)。
+
+**重要決策與備忘**：
+- 增設最高指導原則與防禦性執行規範，以防止 AI Agent 在執行任務時未經深思熟慮即進行破壞性操作，或在未讀取檔案內容的情況下盲目寫入與覆蓋。
+
 
