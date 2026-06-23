@@ -27,7 +27,7 @@ AI Agent 每次開啟新對話或重新進入專案時，屬於「無狀態」�
   - **重要行為核心 Markdown 檔案**：強制使用 **UPPER-CASE (全大寫並以破折號 `-` 連接)**。
     * *核心範例*：`README.md`、`TARGET.md`、`AGENT.md`、`PROCESS.md`、`MEMORY.md`、`GIT-GUIDE.md`、`FEEDBACK.md`
   - **一般專案檔案（含程式碼、規格模板、測試程式等）**：強制使用 **kebab-case (全小寫並以破折號 `-` 連接)**。
-    * *文件範例*：`template-functional-spec.md`、`template-data-schema.md`
+    * *文件範例*：`functional-spec.md`、`data-schema.md`
     * *程式碼範例*：`database-core.py`、`data-cleaner.py`、`main.py`
     * *測試程式範例*：`test-database-core.py`、`test-data-cleaner.py`
 - **層級與分類命名規則**：若檔案有分區或細分必要，檔名亦遵循 kebab-case 的 **「由寬到窄（由大到小）」** 順序，並以破折號 `-` 連接。

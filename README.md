@@ -41,14 +41,14 @@
 *   **[doc/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc)** (產品/專案規格書)
     *   *職責*：定義具體功能、邏輯、資料結構、檔案格式與配置規則的規格書。
     *   *模板檔案*：
-        *   [template-functional-spec.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/template-functional-spec.md)：詳細的功能與演算法邏輯規格模板。
-        *   [template-data-schema.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/template-data-schema.md)：資料表、設定檔與快取格式規格模板。
-        *   [template-exclusion-rules.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/template-exclusion-rules.md)：排除與過濾規則規格模板。
+        *   [functional-spec.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/functional-spec.md)：詳細的功能與演算法邏輯規格模板。
+        *   [data-schema.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/data-schema.md)：資料表、設定檔與快取格式規格模板。
+        *   [exclusion-rules.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/exclusion-rules.md)：排除與過濾規則規格模板。
 *   **[structure/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/structure)** (工程藍圖/電路設計圖)
     *   *職責*：定義物理模組的拆分關係與靜/動態流程圖。
     *   *模板檔案*：
-        *   [template-modules.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/structure/template-modules.md)：物理檔案與職責地圖模板。
-        *   [template-diagram.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/structure/template-diagram.md)：靜態依賴圖與動態 Mermaid 時序圖/流程圖模板。
+        *   [modules.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/structure/modules.md)：物理檔案與職責地圖模板。
+        *   [diagram.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/structure/diagram.md)：靜態依賴圖與動態 Mermaid 時序圖/流程圖模板。
 
 ---
 
@@ -71,19 +71,92 @@
 
 ## 🚀 如何使用本模板啟動新專案 (Quick Start)
 
-當您要啟動一個新專案（不論是程式開發、資料分析或文件撰寫）時，請依照下列步驟：
+當您或您的 AI Agent 準備啟動一個新專案時，為避免盲目載入不必要的文件以及維護清晰的進度，**嚴禁一鍵複製所有檔案**。請遵循以下**「三階段漸進式啟動工作流」**：
 
-1.  **複製結構**：將本模板的所有目錄與檔案複製到您的新專案根目錄下。
-2.  **設定目標與規範 (plan/)**：
-    *   編輯 `plan/TARGET.md`，填入新專案的核心目標、使用情境與功能範圍。
-    *   編輯 `plan/AGENT.md`，根據專案性質微調工作規則（例如：若非 Python 程式專案，可移除最大行數 800 行的 Python 約束，改為 Markdown 檔案的排版約定）。
-    *   編輯 `plan/PROCESS.md`，劃分出您專案的 MVP 執行階段。
-3.  **定義規格 (doc/)**：
-    *   參考 `doc/` 底下的模板，撰寫具體的功能/文件邏輯規格（如資料清洗規則、報告架構）以及資料 Schema（如 Excel 欄位定義、JSON 格式）。
-4.  **繪製藍圖 (structure/)**：
-    *   參考 `structure/` 底下的模板，繪製模組地圖與 Mermaid 流程圖，讓參與專案的人或 AI Agent 清楚理解資料如何流動。
-5.  **自由增減目錄**：
-    *   若此專案僅為「文件撰寫」，您可以刪除 `test/`，並在根目錄新建一個 `draft/` 目錄存放草稿。
-    *   若此專案為「資料採集」，您可保留 `scripts/` 與 `refer/`，並加入 `output/` 目錄。
-6.  **開始執行**：
-    *   在每次重大修改後，在 `plan/MEMORY.md` 中記錄變更日誌，並以相同標題提交 Git Commit。
+---
+
+### 1. 第一階段：複製地圖與核心規範 (建立 plan/ 與 `-template` 後綴)
+
+此階段在目標專案中建立核心規劃目錄，並載入暫存的核心規範文件。
+
+**🛠️ 執行指令**（請將 `<目標專案根目錄>` 與 `<範本專案根目錄>` 替換為您的真實路徑）：
+```powershell
+# 1. 於 {目標專案} 建立必要核心目錄
+mkdir <目標專案根目錄>/plan, <目標專案根目錄>/doc, <目標專案根目錄>/structure
+
+# 2. 複製 {範本專案} 的 plan 核心檔案至 {目標專案}，並加上 -template 後綴
+cp <範本專案根目錄>/plan/TARGET.md <目標專案根目錄>/plan/TARGET-template.md
+cp <範本專案根目錄>/plan/AGENT.md <目標專案根目錄>/plan/AGENT-template.md
+cp <範本專案根目錄>/plan/PROCESS.md <目標專案根目錄>/plan/PROCESS-template.md
+cp <範本專案根目錄>/plan/GIT-GUIDE.md <目標專案根目錄>/plan/GIT-GUIDE.md   # 指引文件不需後綴
+cp <範本專案根目錄>/plan/MEMORY.md <目標專案根目錄>/plan/MEMORY.md         # 日誌直接建立
+```
+
+**🤝 討論查核點**：
+* 執行上述指令後，Agent **必須暫停**，主動向使用者發起討論：
+  > 「我已載入專案的基礎地圖與規範範本。請問本專案的具體目標與核心範圍為何？是否有特殊的開發規範需要寫入 `plan/AGENT-template.md`？」
+
+**解鎖與啟用**：
+* 與使用者確認後，Agent 編輯 `<目標專案根目錄>/plan/TARGET-template.md` 與 `<目標專案根目錄>/plan/AGENT-template.md`。
+* 編輯完成後，執行重命名，移除 `-template` 後綴以解鎖啟用：
+  ```powershell
+  mv <目標專案根目錄>/plan/TARGET-template.md <目標專案根目錄>/plan/TARGET.md
+  mv <目標專案根目錄>/plan/AGENT-template.md <目標專案根目錄>/plan/AGENT.md
+  mv <目標專案根目錄>/plan/PROCESS-template.md <目標專案根目錄>/plan/PROCESS.md
+  ```
+
+---
+
+### 2. 第二階段：建立專案門面與規劃 (README.md & .gitignore)
+
+此階段建立專案首頁，並決定後續開發需要的選用目錄與規格範本。
+
+**🛠️ 執行指令**：
+```powershell
+# 複製專案門面與 gitignore 至 {目標專案}
+cp <範本專案根目錄>/README.md <目標專案根目錄>/README-template.md
+cp <範本專案根目錄>/.gitignore <目標專案根目錄>/.gitignore
+```
+
+**🤝 討論查核點**：
+* 複製完畢後，Agent **必須暫停**，主動與使用者討論：
+  > 「請問我們這個專案接下來需要哪些規格書與架構藍圖？另外，是否需要建立選用目錄（如 source, test, scripts, logs, refer）？」
+
+**解鎖與決策**：
+* 根據討論結果，Agent 編輯 `<目標專案根目錄>/README-template.md` 寫入專案簡介與名稱，並移除後綴：
+  ```powershell
+  mv <目標專案根目錄>/README-template.md <目標專案根目錄>/README.md
+  ```
+* 依據討論決策，建立需要的選用目錄，例如：
+  ```powershell
+  mkdir <目標專案根目錄>/source, <目標專案根目錄>/test
+  ```
+
+**🔒 Git 初始化**：
+* 核心結構與規則就緒後，在 `{目標專案}` 執行 Git 初始化並進行首次零點 Commit 存檔：
+  ```powershell
+  git -C <目標專案根目錄> init
+  git -C <目標專案根目錄> add .
+  git -C <目標專案根目錄> commit -m "2026xxxx-1 Initialize project structure and core guidelines"
+  ```
+
+---
+
+### 3. 第三階段：按需載入規格與藍圖 (從 doc/ 與 structure/ 複製)
+
+根據第二階段的討論結果，Agent 按需複製所需要的規格書範本，拒絕拷貝不必要的檔案，以防專案目錄膨脹。
+
+**🛠️ 執行指令 (以資料庫/設定檔規格為例)**：
+```powershell
+# 按需複製 data-schema 範本至 {目標專案}，並加上 -template 後綴
+cp <範本專案根目錄>/doc/data-schema.md <目標專案根目錄>/doc/data-schema-template.md
+```
+
+**🤝 討論查核點**：
+* 複製後，Agent 配合使用者填寫相關規格細節，確保規格與設計精確。
+
+**解鎖與啟用**：
+* 填寫完畢後，重命名移除後綴以解鎖：
+  ```powershell
+  mv <目標專案根目錄>/doc/data-schema-template.md <目標專案根目錄>/doc/data-schema.md
+  ```
