@@ -82,7 +82,7 @@ AI Agent 每次開啟新對話或重新進入專案時，屬於「無狀態」�
   - *格式*：`{DateIndex} {English Summary}`
   - *範例*：`20260618-1 Add feedback mechanism and git guide template`
   - *常用動詞表*：`Initialize` / `Add` / `Update` / `Fix` / `Refactor` / `Remove` / `Draft` / `Revise`
-- **Commit 描述**：列出本次變更的重點概要（中英皆可），與 `MEMORY.md` 對應章節相呼應。
+- **Commit 描述**：列出本次變更的重點概要（**強制使用英文**），與 `MEMORY.md` 對應章節相呼應。
 - **版本號追溯策略**：專案版本號建議與 `plan/MEMORY.md` 的日誌索引綁定，採用格式 `v{Date}.{MemoryIndex}`（例如：`v20260618.2`），確保每個版本號都能 100% 追溯到對應的變更紀錄與 Git Commit。版本號應記錄在 `plan/PROCESS.md` 的「目前狀態」區段。
 - **Git 操作遇到問題時**：請參閱 `plan/GIT-GUIDE.md`，其中定義了格式準則、錯誤處理與非標準情境的指引。
 
