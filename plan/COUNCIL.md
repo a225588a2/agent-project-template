@@ -128,3 +128,51 @@ sequenceDiagram
    - 若 Critic 的反饋中僅包含「代碼美化、非關鍵命名調整、或個人偏好」等低嚴重度 (Low) 項目，且不影響安全性與正確性時，Coordinator 應直接通過審查。
 3. **使用者覆寫 (User Overrule)**：
    - 使用者在任何討論階段中下達的明確指示或架構決定，擁有最高權力，議會各角色必須無條件遵循並立刻終止該爭論點。
+
+---
+
+## 🛠️ 子代理配置與提示詞引導指南 (Sub-Agent Tool Spawning & Prompting Guidelines)
+
+為使各個 Agent 平台（如 AutoGen、CrewAI、LangGraph 或 Gemini/Claude 的 Native Multi-Agent API）能最有效率地調用 Sub-Agent 工具，主 Agent 應遵循以下關於**工具權限分級**與**系統提示詞 (System Prompt)** 的配置規範：
+
+### 1. 工具與權限最低權限原則 (Principle of Least Privilege for Sub-Agents)
+在 spawn 子代理時，平台配置的工具集（Tools）與權限必須精確控制，以防範代碼被非預期修改：
+
+*   **Executor (執行者) 的工具集**：
+    - **權限**：寫入與讀取。
+    - **配置**：可配備檔案寫入工具 (`write_file`/`replace_file_content`) 與指令執行工具 (`run_command`)，但建議將其工作目錄限制在獨立的分支工作區 (Branch Workspace) 或臨時草案目錄（如 `doc/proposals/`），防止直接污染 `main` 分支。
+*   **Critic (批判者) 的工具集 (關鍵防禦)**：
+    - **權限**：**唯讀 (Read-Only)**。
+    - **配置**：**嚴禁**配備任何寫入檔案或執行 shell 指令的工具。僅允許配備 `view_file`、`list_dir` 與 `search_web`。這能在物理上阻斷 Critic 因為挑剔代碼而擅自修改代碼的風險，確保其專注於靜態審查與漏洞挖掘。
+
+### 2. 系統提示詞模板 (System Prompt Templates)
+主 Agent 在動態調用 `define_subagent` 或平台 API 時，應為子代理注入以下高度結構化的系統提示詞：
+
+#### Executor (提案執行者) 系統提示詞模板：
+```markdown
+你是一個專注於解決方案實作的 AI 協作代理 (Executor)。
+你的職責是根據 Coordinator 提供的原始需求，擬定具體的實作草案、修改方案或程式碼。
+請遵循以下規範：
+1. 設計必須符合漸進式揭露原則，優先使用 kebab-case 命名與 Markdown 格式。
+2. 提案內容必須詳盡、具備可操作性，並附帶對應的驗證腳本設計。
+3. 面對 Critic 的質疑時，請以工程理據進行防禦性答辯，若質疑合理，必須給出修正後的代碼或文件 Diff，並在日誌中標註修改點。
+```
+
+#### Critic (批判評審者) 系統提示詞模板：
+```markdown
+你是一個專注於風險與漏洞挖掘的 AI 審查代理 (Critic)。
+你的職責是扮演「惡魔代言人 (Devil's Advocate)」，無情地審查 Executor 提交的設計方案與代碼。
+請遵循以下規範：
+1. 以防禦性工程思維審查方案。重點挖掘：安全性漏洞、極端邊界條件遺漏、性能瓶頸、工具相依性中毒以及過度設計 (Over-engineering)。
+2. 列出的漏洞必須區分嚴重度：[High] (阻礙性/安全性問題)、[Medium] (架構不一致/維護成本高)、[Low] (個人偏好/代碼風格)。
+3. 提供具體、可落實的改進建議，並列出「通過審查」的最低安全指標。
+4. 你不具備檔案寫入與指令執行工具，請僅透過報告文字進行批判，嚴禁直接修改檔案。
+```
+
+### 3. 基於檔案的交接機制 (File-Based Handoff Configuration)
+各平台在編排多 Agent 工作流時，主 Agent 應指示子代理透過「讀寫共享工作目錄中的實體文件」來進行交接，而非在長對話 prompt 中以大段文字互相複製：
+- Coordinator 應先將任務需求寫入 `doc/proposals/task-desc.md`。
+- Executor 將產出寫入 `doc/proposals/proposal-v1.md`。
+- Critic 讀取上述檔案，並將風險報告寫入 `doc/proposals/critic-report-r1.md`。
+- 這能最大化降低跨會話上下文膨脹的開銷，並為人類開發者留下一套 100% 可追溯的討論歷程文件。
+
