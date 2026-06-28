@@ -37,6 +37,7 @@
         *   [PROCESS.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/PROCESS.md)：專案開發里程碑與待辦清單 (ToDo)。
         *   [MEMORY.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/MEMORY.md)：每日執行歷史日誌與關鍵決策備忘。
         *   [GIT-GUIDE.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/GIT-GUIDE.md)：Git 操作的非標準情境指引（階段式揭露，日常不需翻閱）。
+        *   [COUNCIL.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/COUNCIL.md)：多 Agent 討論議會與看板式交接規範（⚠️ *選用*，高額度/高難度任務時啟用）。
         *   [FEEDBACK.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/FEEDBACK.md)：專案經驗回饋紀錄（⚠️ *選用*，可視專案需求刪除）。
 *   **[doc/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc)** (產品/專案規格書)
     *   *職責*：定義具體功能、邏輯、資料結構、檔案格式與配置規則的規格書。
@@ -88,6 +89,7 @@ mkdir <目標專案根目錄>/plan, <目標專案根目錄>/doc, <目標專案�
 cp <範本專案根目錄>/plan/TARGET.md <目標專案根目錄>/plan/TARGET-template.md
 cp <範本專案根目錄>/plan/AGENT.md <目標專案根目錄>/plan/AGENT-template.md
 cp <範本專案根目錄>/plan/PROCESS.md <目標專案根目錄>/plan/PROCESS-template.md
+cp <範本專案根目錄>/plan/COUNCIL.md <目標專案根目錄>/plan/COUNCIL-template.md # 討論議會規範 (選用)
 cp <範本專案根目錄>/plan/GIT-GUIDE.md <目標專案根目錄>/plan/GIT-GUIDE.md   # 指引文件不需後綴
 cp <範本專案根目錄>/plan/MEMORY.md <目標專案根目錄>/plan/MEMORY.md         # 日誌直接建立
 ```
@@ -103,6 +105,7 @@ cp <範本專案根目錄>/plan/MEMORY.md <目標專案根目錄>/plan/MEMORY.md
   mv <目標專案根目錄>/plan/TARGET-template.md <目標專案根目錄>/plan/TARGET.md
   mv <目標專案根目錄>/plan/AGENT-template.md <目標專案根目錄>/plan/AGENT.md
   mv <目標專案根目錄>/plan/PROCESS-template.md <目標專案根目錄>/plan/PROCESS.md
+  mv <目標專案根目錄>/plan/COUNCIL-template.md <目標專案根目錄>/plan/COUNCIL.md # 若有啟用
   ```
 
 ---
