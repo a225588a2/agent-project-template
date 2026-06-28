@@ -6,8 +6,8 @@
 
 ## 目前狀態 (Current Status)
 
-- **當前進度**：`[請在此填入當前狀態。例如：階段 0（專案結構定義與骨架搭建）已完成，目前正進入階段 1（資料採集核心功能開發）]`
-- **目前版本**：v20260628.1
+- **當前進度**：`[階段 1（核心基礎實作）進行中，已完成對上次結論的評估提案，並二次優化 COUNCIL.md 流程與角色]`
+- **目前版本**：v20260628.2
 
 ---
 
@@ -18,6 +18,7 @@
 - [x] 建立通用專案骨架與必要核心目錄 (`plan/`, `doc/`, `structure/`)。
 - [x] 建立並確認第一版工作規範 `plan/AGENT.md` 與目標定義 `plan/TARGET.md`。
 - [x] 建立並導入多 Agent 討論議會與協作規範 `plan/COUNCIL.md`，並整合至工作流。
+- [x] 完成對上次結論的評估提案，並二次優化 COUNCIL.md 流程、雙軌記憶物理分離與安全隔離防線。
 
 ---
 
@@ -50,10 +51,10 @@
 > [說明：非當前階段必須完成、但對專案未來有價值的中長期計畫、Bug 修復或功能優化，可以先記錄在此，避免遺忘]
 
 ### 高優先級 (High Priority)
-- [ ] 實作 `scripts/bootstrap.py` 零依賴、非互動優先（參數驅動）之專案初始化工具。
-- [ ] 實作 `scripts/sync-project.py` 手動/顯式調用與寬鬆解析之進度同步工具。
-- [ ] 在 `plan/MEMORY.md` 頂部導入「滾動式記憶摘要 (Rolling Summary)」機制。
-- [ ] 在 `plan/AGENT.md` 中新增「上下文負載與排除規則指引」文字說明。
+- [ ] 實作 `scripts/bootstrap.py` 零依賴、非互動優先（參數驅動）之專案初始化工具。**【限制：只能使用 Python 標準庫內建支援的 JSON 格式，禁止自研 YAML/TOML 解析器】**
+- [ ] 實作 `scripts/sync-project.py` 手動/顯式調用之進度同步工具。**【限制：狀態一律採用單一結構化 JSON/YAML 檔案，廢除 SQLite；堅持 Strict Parsing，解析失敗拋出 Traceback 觸發 Self-Correction】**
+- [x] 導入「記憶雙軌物理分離（熱記憶 `plan/MEMORY.md` 與冷記憶 `logs/cold-history.log`）」機制。
+- [x] 在 `plan/AGENT.md` 中新增「上下文負載與排除規則指引」與「HITL 二次確認」文字說明。
 
 ### 中優先級 (Medium Priority)
 - [ ] `[待辦項目一：例如，提供一鍵重設所有參數的功能]`

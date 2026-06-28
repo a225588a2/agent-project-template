@@ -1,50 +1,38 @@
-# 專案執行紀錄與決策歷史 (Memory)
+# 專案執行紀錄與決策歷史 (Hot Memory)
 
-本文件用於詳細記錄專案的執行軌跡、重大技術/架構決策以及每日的變更歷史。紀錄應依時間順序「由舊到新，由上到下」累積。
-
-每筆紀錄的標題與格式應與 Git Commit 的標題保持一致，以便於日後追溯。
-
----
-
-## 2026/06/11 (範例日期)
-
-### 20260611-1 專案初始化與結構搭設
-
-**變更摘要**：
-- 建立了核心目錄結構（`plan/`、`doc/`、`structure/`）。
-- 建立了基礎工作規範文件 `plan/AGENT.md` 與專案目標文件 `plan/TARGET.md`。
-- 建立了通用的 `.gitignore` 與 `README.md`。
-
-**重要決策與備忘**：
-- 決定採用「核心必要（plan/doc/structure）+ 自由增減參考（source/test/scripts/logs/refer）」的目錄設計，以兼顧規範性與高度的專案適用性。
-- 專案檔案命名全面導入 kebab-case，重要行為核心 Markdown 檔案使用 UPPER-CASE。
+本文件僅記錄專案的「熱記憶 (Hot Memory)」，包含專案滾動式摘要 (Rolling Summary) 以及最近 3~5 筆重大變更的索引摘要。
+詳細的歷史變更日誌與細節已物理分離至 `logs/cold-history.log`，供 Agent 使用 `grep_search` 等工具檢索，免除 RAG 複雜度，且杜絕 HTML 註記標籤遭毀損的風險。
 
 ---
 
-## 2026/06/12 (範例日期)
+## 📌 專案滾動式摘要 (Rolling Summary)
 
-### 20260612-1 [簡述本次變更項目]
-
-**變更摘要**：
-- `[變更項目一]`
-- `[變更項目二]`
-
-**重要決策與備忘**：
-- `[重大技術決定、參數微調理由或與使用者討論後的決策備忘]`
+- **當前核心目標**：搭建具備漸進式揭露、安全性防禦與極簡化架構的 AI 專案模板。
+- **當前系統架構關鍵決策**：
+  - 專案配置與初始化工具 (`bootstrap.py`) 全面採用內建 JSON 格式，廢除脆弱的 TOML/YAML 自研解析。
+  - 議會交接暫存文件儲存於 `.council/`，自動化結案歸檔清理，僅保留最終 `doc/proposals/COUNCIL_DECISION.md`。
+  - 狀態同步工具 `sync-project.py` 採用單一 JSON/YAML 檔案，取消 SQLite 與雙重狀態，解析失敗直接報錯拋出 Traceback 觸發 Self-Correction。
+  - 記憶系統採用物理分離（熱記憶 `plan/MEMORY.md` 與冷記憶 `logs/cold-history.log`），以 grep 代替 RAG。
+  - 議會流程二次優化，正式納入專職「唯讀」的 Researcher 角色與 Phase 0 調研先行流程，實施「連網不讀檔，讀檔不連網」的雙重沙箱防護。
+- **下一步執行重點**：實作 JSON 限制的 `bootstrap.py` 與 strict parsing & 單一 JSON/YAML 狀態的 `sync-project.py`。
 
 ---
 
-## 2026/06/28
+## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
-### 20260628-1 Add Multi-Agent Council guidelines and Kanban Handoff Protocol
+### 20260628-2 優化議會協作規範與記憶系統物理分離 (v20260628.2)
+- **變更項目**：
+  - 實施 Researcher 「連網不讀檔，讀檔不連網」雙重沙箱與簡報無害化。
+  - 重申 HITL 原則，任何外網資訊生成的代碼指令須人類手動核准。
+  - 廢除 SQLite 與寬鬆解析，改為單一 JSON 檔案狀態追蹤與 Strict Parsing。
+  - 廢除 `MEMORY.md` 內嵌 HTML 註記與 RAG 檢索，物理分離為熱記憶 (`plan/MEMORY.md`) 與冷歷史日誌 (`logs/cold-history.log`)。
+  - 議會交接臨時檔移入 `.council/` 並設定 `.gitignore`，結案時自動清理，只留 `doc/proposals/COUNCIL_DECISION.md`。
+  - 限制 `bootstrap.py` 配置檔格式僅限內建 JSON 支援。
 
-**變更摘要**：
-- 建立了全新核心規範文件 `plan/COUNCIL.md`，定義了高預算與高難度任務時的討論議會流程與看板式交接機制。
-- 修改了 `plan/AGENT.md`，串接 Sub Agent 啟動條件，並將 `plan/COUNCIL.md` 加入啟動閱讀清單與核心檔案範例。
-- 更新了 `README.md`，將 `plan/COUNCIL.md` 加入核心目錄描述與三階段 Quick Start 中。
-- 更新了 `plan/PROCESS.md`，將本里程碑標記為已完成。
+### 20260628-1 導入多 Agent 討論議會與看板式交接協議 (v20260628.1)
+- **變更項目**：建立 `plan/COUNCIL.md`，定義主 Agent（協調者）、執行者（Executor）、批判者（Critic）三方流程。
 
-**重要決策與備忘**：
-- 引進 **Hermes Agent** 的看板管理理念，透過 Kanban 狀態防範無條理群聊導致的認知混亂。
-- 借鏡 **OpenClaw** 與 **Claude** 的隔離設計，明確規定 Sub Agent 工作區與上下文隔離規則，減少認知負載與 Token 消耗。
-- 設計了主 Agent（協調者）、執行者（Executor）、批判者（Critic）與特化專家的三方協同流程。
+### 20260611-1 專案初始化與結構搭設 (v20260611.1)
+- **變更項目**：建立核心目錄結構與基礎工作規範。
+
+*(更早以前的變更明細與技術決策歷史，請參閱 [cold-history.log](file:///c:/PersonalWS/AgentSandBox/AiProjectTemplate/logs/cold-history.log))*

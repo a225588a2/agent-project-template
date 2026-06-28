@@ -82,3 +82,9 @@ $RECYCLE.BIN/
 # 排除日誌目錄下的執行產出，但保留目錄本身
 logs/*
 !logs/.gitkeep
+!logs/cold-history.log
+
+# ==========================================
+# 議會臨時交接目錄 (Multi-Agent Council Handoff)
+# ==========================================
+.council/
