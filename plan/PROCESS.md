@@ -7,7 +7,7 @@
 ## 目前狀態 (Current Status)
 
 - **當前進度**：`[階段 1（核心基礎實作）進行中，已完成對上次結論的評估提案，並二次優化 COUNCIL.md 流程與角色]`
-- **目前版本**：v1.0.20260701.3
+- **目前版本**：v1.0.20260701.4
 
 ---
 
@@ -52,7 +52,7 @@
 
 ### 高優先級 (High Priority)
 - [x] 實作 `scripts/bootstrap.py` 零依賴、非互動優先（參數驅動）之專案初始化工具。**【限制：只能使用 Python 標準庫內建支援的 JSON 格式，禁止自研 YAML/TOML 解析器】**
-- [x] 實作 `scripts/sync-project.py` 手動/顯式調用之進度同步工具。**【限制：狀態一律採用單一結構化 JSON/YAML 檔案，廢除 SQLite；堅持 Strict Parsing，解析失敗拋出 Traceback 觸發 Self-Correction】**
+- [x] 實作 `scripts/sync_project.py` 手動/顯式調用之進度同步工具。**【限制：狀態一律採用單一結構化 JSON/YAML 檔案，廢除 SQLite；堅持 Strict Parsing，解析失敗拋出 Traceback 觸發 Self-Correction】**
 - [x] 導入「記憶雙軌物理分離（熱記憶 `plan/MEMORY.md` 與冷記憶 `logs/cold-history.log`）」機制。
 - [x] 在 `plan/AGENT.md` 中新增「上下文負載與排除規則指引」與「HITL 二次確認」文字說明。
 

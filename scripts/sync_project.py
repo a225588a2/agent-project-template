@@ -11,7 +11,7 @@ from datetime import datetime
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="AI Project Status Sync Tool (sync-project.py)",
+        description="AI Project Status Sync Tool (sync_project.py)",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument(

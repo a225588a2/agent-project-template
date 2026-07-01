@@ -144,12 +144,12 @@ mv <目標專案根目錄>/doc/data-schema-template.md <目標專案根目錄>/d
 
 ## 🔄 進度與版本同步自動化 (DoD Sync Automation)
 
-本專案模板內建了自動化同步腳本 `scripts/sync-project.py`，用於在任務完成時自動為 `plan/PROCESS.md` 待辦事項打勾，並推進版本號與更新熱記憶日誌。
+本專案模板內建了自動化同步腳本 `scripts/sync_project.py`，用於在任務完成時自動為 `plan/PROCESS.md` 待辦事項打勾，並推進版本號與更新熱記憶日誌。
 
 ### 1. 使用方式 (Usage)
 完成任務或日常變更後，在專案根目錄執行：
 ```bash
-python scripts/sync-project.py [--bump patch|minor|major]
+python scripts/sync_project.py [--bump patch|minor|major]
 ```
 
 ### 2. 核心規範 (Rules)
