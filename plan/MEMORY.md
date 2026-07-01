@@ -20,6 +20,11 @@
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
+### v1.0.20260701.7 Update directory definitions and clean up obsolete checklists in AGENT.md (v1.0.20260701.7)
+- **變更項目**：
+  * 於 AGENT.md 新增 4 個核心目錄的職責定義，並說明規則需隨物理目錄現況進行增補與動態更新。
+  * 清理 AGENT.md 護欄與 DoD 完成條件中殘存的舊版 MEMORY.md 手動同步描述，統一對齊為 sync_project.py 自動化工作流。
+
 ### v1.0.20260701.6 Add directory selection decision tree in AGENT.md (v1.0.20260701.6)
 - **變更項目**：
   * 於 AGENT.md 新增「專案目錄增減決策樹」。
@@ -39,8 +44,3 @@
 - **變更項目**：
   * 實作日誌宣告版本號與腳本計算版本的強一致性比對，若不合立即 exit(1)。
   * 調整 sync_project.py 將版本修改寫入延遲至驗證通過後執行，避免中斷時檔案遭受污染。
-
-### v1.0.20260701.2 Support flexible task checkbox parsing in sync_project.py (v1.0.20260701.2)
-- **變更項目**：
-  * 引入正則表達式重構 sync_project.py 待辦判定。
-  * 支援不同層級縮排、列表符號（-, *, +）與反引號括號（`[ ]`, `[/]`）樣式，並完美保留原始格式。

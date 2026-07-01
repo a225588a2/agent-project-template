@@ -59,3 +59,10 @@
 - summary:
   * 於 AGENT.md 新增「專案目錄增減決策樹」。
   * 提供明確且結構化的決策問題，指引 Agent 在專案初始化時，能快速與使用者核對並判斷選用目錄（source, test, scripts, refer）之必要性。
+
+[2026/07/01 v1.0.20260701.7] Update directory definitions and clean up obsolete checklists in AGENT.md
+- todo_ref: null
+- commit: v1.0.20260701.7 Update directory definitions and clean up obsolete checklists in AGENT.md
+- summary:
+  * 於 AGENT.md 新增 4 個核心目錄的職責定義，並說明規則需隨物理目錄現況進行增補與動態更新。
+  * 清理 AGENT.md 護欄與 DoD 完成條件中殘存的舊版 MEMORY.md 手動同步描述，統一對齊為 sync_project.py 自動化工作流。
