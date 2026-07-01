@@ -20,6 +20,11 @@
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
+### v1.0.20260701.5 Soften code naming rules in AGENT.md (v1.0.20260701.5)
+- **變更項目**：
+  * 修改 AGENT.md，將程式碼命名原則由「強制 snake_case」調整為「依程式語言標準慣例建議命名」（例如 Python 使用 snake_case）。
+  * 避免強加 snake_case 於其他有各自標準命名慣例之語言中（如 JS/TS 的 camelCase 等）。
+
 ### v1.0.20260701.4 Refine naming convention: docs kebab-case, code snake_case (v1.0.20260701.4)
 - **變更項目**：
   * 更新 AGENT.md 命名規範，區分文件（kebab-case）與程式碼/腳本（snake_case）命名原則。
@@ -40,12 +45,3 @@
   * 實作 scripts/bootstrap.py，建立零依賴、參數驅動之初始化工具，並提供手動與腳本並存路徑。
   * 實作 scripts/sync_project.py，實現 ToDo 看板打勾、版本號遞增與熱記憶更新。
   * 文件並存優化，於 README.md、AGENT.md、COUNCIL.md 寫入對應工具鏈規範。
-
-### 20260628-2 優化議會協作規範與記憶系統物理分離 (v20260628.2)
-- **變更項目**：
-  - 實施 Researcher 「連網不讀檔，讀檔不連網」雙重沙箱與簡報無害化。
-  - 重申 HITL 原則，任何外網資訊生成的代碼指令須人類手動核准。
-  - 廢除 SQLite 與寬鬆解析，改為單一 JSON 檔案狀態追蹤與 Strict Parsing。
-  - 廢除 `MEMORY.md` 內嵌 HTML 註記與 RAG 檢索，物理分離為熱記憶 (`plan/MEMORY.md`) 與冷歷史日誌 (`logs/cold-history.log`)。
-  - 議會交接臨時檔移入 `.council/` 並設定 `.gitignore`，結案時自動清理，只留 `doc/proposals/COUNCIL_DECISION.md`。
-  - 限制 `bootstrap.py` 配置檔格式僅限內建 JSON 支援。

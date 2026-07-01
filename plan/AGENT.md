@@ -27,12 +27,12 @@ AI Agent 每次開啟新對話或重新進入專案時，屬於「無狀態」�
 - **檔案命名規則 (全局)**：
   - **重要行為核心 Markdown 檔案**：強制使用 **UPPER-CASE (全大寫並以破折號 `-` 連接)**。
     * *核心範例*：`README.md`、`TARGET.md`、`AGENT.md`、`PROCESS.md`、`MEMORY.md`、`COUNCIL.md`、`GIT-GUIDE.md`、`FEEDBACK.md`
-  - **一般專案文件（如規格說明文件、Markdown 範本等）**：強制使用 **kebab-case (全小寫並以破折號 `-` 連接)**。
+  - **一般專案文件（如規格說明文件、Markdown 範本等）**：建議優先使用 **kebab-case (全小寫並以破折號 `-` 連接)**。
     * *文件範例*：`functional-spec.md`、`data-schema.md`
-  - **程式原始碼、輔助腳本與測試程式**：強制使用 **snake_case (全小寫並以底線 `_` 連接)**，以防模組導入 (import) 時發生語法錯誤。
+  - **程式原始碼、輔助腳本與測試程式**：建議依據所使用的程式語言標準慣例命名（例如 Python 專案建議使用 **snake_case**），並應避免使用破折號 `-` 以免在部分語言（如 Python）中發生模組導入 (import) 語法錯誤。
     * *程式碼範例*：`database_core.py`、`data_cleaner.py`、`main.py`
     * *測試程式範例*：`test_database_core.py`、`test_data_cleaner.py`
-- **層級與分類命名規則**：若檔案有分區或細分必要，檔名亦遵循 kebab-case/snake_case 的 **「由寬到窄（由大到小）」** 順序連接。
+- **層級與分類命名規則**：若檔案有分區或細分必要，檔名亦遵循對應語言之慣例命名順序連接。
   - *範例*：`data-schema-cache.md`（文件）；`database_core_cache.py`（程式碼）
 - **Markdown 優先**：所有非程式碼的說明文件、規格書與紀錄一律優先採用 Markdown 格式撰寫。
 - **檢查前置準備**：執行 any 具體工作前，必須優先檢查 `plan/` 目錄中是否有既存的規範或進度指示。

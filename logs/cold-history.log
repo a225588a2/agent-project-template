@@ -45,3 +45,10 @@
 - summary:
   * 更新 AGENT.md 命名規範，區分文件（kebab-case）與程式碼/腳本（snake_case）命名原則。
   * 將 scripts/sync-project.py 重新命名為 scripts/sync_project.py，並修正所有相關引用以防止 Python import 語法錯誤。
+
+[2026/07/01 v1.0.20260701.5] Soften code naming rules in AGENT.md
+- todo_ref: null
+- commit: v1.0.20260701.5 Soften code naming rules to recommend standard language-based conventions
+- summary:
+  * 修改 AGENT.md，將程式碼命名原則由「強制 snake_case」調整為「依程式語言標準慣例建議命名」（例如 Python 使用 snake_case）。
+  * 避免強加 snake_case 於其他有各自標準命名慣例之語言中（如 JS/TS 的 camelCase 等）。
