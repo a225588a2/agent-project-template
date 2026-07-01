@@ -20,6 +20,12 @@
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
+### v1.0.20260701.1 Implement project template automation scripts (v1.0.20260701.1)
+- **變更項目**：
+  * 實作 scripts/bootstrap.py，建立零依賴、參數驅動之初始化工具，並提供手動與腳本並存路徑。
+  * 實作 scripts/sync-project.py，實現 ToDo 看板打勾、版本號遞增與熱記憶更新。
+  * 文件並存優化，於 README.md、AGENT.md、COUNCIL.md 寫入對應工具鏈規範。
+
 ### 20260628-2 優化議會協作規範與記憶系統物理分離 (v20260628.2)
 - **變更項目**：
   - 實施 Researcher 「連網不讀檔，讀檔不連網」雙重沙箱與簡報無害化。

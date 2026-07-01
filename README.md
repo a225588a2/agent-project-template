@@ -72,94 +72,89 @@
 
 ## 🚀 如何使用本模板啟動新專案 (Quick Start)
 
-當您或您的 AI Agent 準備啟動一個新專案時，為避免盲目載入不必要的文件以及維護清晰的進度，**嚴禁一鍵複製所有檔案**。請遵循以下**「三階段漸進式啟動工作流」**：
+當您或您的 AI Agent 準備啟動一個新專案時，為避免盲目載入不必要的文件以及維護清晰的進度，我們提供以下兩種啟動路徑（推薦優先使用 **Option A 腳本啟動**以提高準確率並節省 Token）：
 
 ---
 
-### 1. 第一階段：複製地圖與核心規範 (建立 plan/ 與 `-template` 後綴)
+### 💡 Option A：腳本快速啟動 (推薦)
 
-此階段在目標專案中建立核心規劃目錄，並載入暫存的核心規範文件。
+您可以直接調用範本內建的初始化腳本 `scripts/bootstrap.py`，一鍵自動化建立專案結構、解鎖文件並初始化 Git。
 
-**🛠️ 執行指令**（請將 `<目標專案根目錄>` 與 `<範本專案根目錄>` 替換為您的真實路徑）：
+**🛠️ 執行指令**（請將路徑與參數替換為您的真實屬性）：
+```bash
+python scripts/bootstrap.py --target-dir <目標專案根目錄> --name "專案名稱" --agent "AI主要代理"
+```
+*   **非互動模式**：在沙盒或 CI/CD 無 TTY 環境下，腳本會自動以 `--non-interactive` 模式執行，自動填寫預設值。
+*   **Git 本地安全偵測**：腳本僅檢查目標目錄本身是否存在 `.git`。若不存在（即使父目錄有 Git 管控且忽略了本專案），仍會獨立初始化 Git 並自動進行首次零點 Commit（格式為 `v1.0.YYYYMMDD.1 Initialize project template`）。
+
+---
+
+### 📝 Option B：手動逐步啟動 (保留備份)
+
+如果您傾向於不依賴腳本，或在特殊環境下開發，可以完全保留原有的手動解鎖啟動流程：
+
+#### 1. 第一階段：複製地圖與核心規範 (建立 plan/ 與 `-template` 後綴)
 ```powershell
 # 1. 於 {目標專案} 建立必要核心目錄
 mkdir <目標專案根目錄>/plan, <目標專案根目錄>/doc, <目標專案根目錄>/structure
 
-# 2. 複製 {範本專案} 的 plan 核心檔案至 {目標專案}，並加上 -template 後綴
+# 2. 複製 {範本專案} 的 plan 核心檔案，並加上 -template 後綴
 cp <範本專案根目錄>/plan/TARGET.md <目標專案根目錄>/plan/TARGET-template.md
 cp <範本專案根目錄>/plan/AGENT.md <目標專案根目錄>/plan/AGENT-template.md
 cp <範本專案根目錄>/plan/PROCESS.md <目標專案根目錄>/plan/PROCESS-template.md
-cp <範本專案根目錄>/plan/COUNCIL.md <目標專案根目錄>/plan/COUNCIL-template.md # 討論議會規範 (選用)
-cp <範本專案根目錄>/plan/GIT-GUIDE.md <目標專案根目錄>/plan/GIT-GUIDE.md   # 指引文件不需後綴
-cp <範本專案根目錄>/plan/MEMORY.md <目標專案根目錄>/plan/MEMORY.md         # 日誌直接建立
+cp <範本專案根目錄>/plan/COUNCIL.md <目標專案根目錄>/plan/COUNCIL-template.md
+cp <範本專案根目錄>/plan/GIT-GUIDE.md <目標專案根目錄>/plan/GIT-GUIDE.md
+cp <範本專案根目錄>/plan/MEMORY.md <目標專案根目錄>/plan/MEMORY.md
 ```
+*   **查核點**：Agent 暫停並與使用者對齊專案目標後，編輯並重命名解鎖：
+    ```powershell
+    mv <目標專案根目錄>/plan/TARGET-template.md <目標專案根目錄>/plan/TARGET.md
+    mv <目標專案根目錄>/plan/AGENT-template.md <目標專案根目錄>/plan/AGENT.md
+    mv <目標專案根目錄>/plan/PROCESS-template.md <目標專案根目錄>/plan/PROCESS.md
+    mv <目標專案根目錄>/plan/COUNCIL-template.md <目標專案根目錄>/plan/COUNCIL.md
+    ```
 
-**🤝 討論查核點**：
-* 執行上述指令後，Agent **必須暫停**，主動向使用者發起討論：
-  > 「我已載入專案的基礎地圖與規範範本。請問本專案的具體目標與核心範圍為何？是否有特殊的開發規範需要寫入 `plan/AGENT-template.md`？」
-
-**解鎖與啟用**：
-* 與使用者確認後，Agent 編輯 `<目標專案根目錄>/plan/TARGET-template.md` 與 `<目標專案根目錄>/plan/AGENT-template.md`。
-* 編輯完成後，執行重命名，移除 `-template` 後綴以解鎖啟用：
-  ```powershell
-  mv <目標專案根目錄>/plan/TARGET-template.md <目標專案根目錄>/plan/TARGET.md
-  mv <目標專案根目錄>/plan/AGENT-template.md <目標專案根目錄>/plan/AGENT.md
-  mv <目標專案根目錄>/plan/PROCESS-template.md <目標專案根目錄>/plan/PROCESS.md
-  mv <目標專案根目錄>/plan/COUNCIL-template.md <目標專案根目錄>/plan/COUNCIL.md # 若有啟用
-  ```
-
----
-
-### 2. 第二階段：建立專案門面與規劃 (README.md & .gitignore)
-
-此階段建立專案首頁，並決定後續開發需要的選用目錄與規格範本。
-
-**🛠️ 執行指令**：
+#### 2. 第二階段：建立專案門面與規劃 (README.md & .gitignore)
 ```powershell
-# 複製專案門面與 gitignore 至 {目標專案}
 cp <範本專案根目錄>/README.md <目標專案根目錄>/README-template.md
 cp <範本專案根目錄>/.gitignore <目標專案根目錄>/.gitignore
 ```
+*   **查核點**：編輯 `README-template.md` 寫入專案簡介，並解鎖：
+    ```powershell
+    mv <目標專案根目錄>/README-template.md <目標專案根目錄>/README.md
+    ```
+*   **Git 初始化**：
+    ```powershell
+    git -C <目標專案根目錄> init
+    git -C <目標專案根目錄> add .
+    git -C <目標專案根目錄> commit -m "v1.0.YYYYMMDD.1 Initialize project structure and core guidelines"
+    ```
 
-**🤝 討論查核點**：
-* 複製完畢後，Agent **必須暫停**，主動與使用者討論：
-  > 「請問我們這個專案接下來需要哪些規格書與架構藍圖？另外，是否需要建立選用目錄（如 source, test, scripts, logs, refer）？」
+#### 3. 第三階段：按需載入規格與藍圖
+```powershell
+cp <範本專案根目錄>/doc/data-schema.md <目標專案根目錄>/doc/data-schema-template.md
+# 編輯完成後解鎖
+mv <目標專案根目錄>/doc/data-schema-template.md <目標專案根目錄>/doc/data-schema.md
+```
 
-**解鎖與決策**：
-* 根據討論結果，Agent 編輯 `<目標專案根目錄>/README-template.md` 寫入專案簡介與名稱，並移除後綴：
-  ```powershell
-  mv <目標專案根目錄>/README-template.md <目標專案根目錄>/README.md
-  ```
-* 依據討論決策，建立需要的選用目錄，例如：
-  ```powershell
-  mkdir <目標專案根目錄>/source, <目標專案根目錄>/test
-  ```
-
-**🔒 Git 初始化**：
-* 核心結構與規則就緒後，在 `{目標專案}` 執行 Git 初始化並進行首次零點 Commit 存檔：
-  ```powershell
-  git -C <目標專案根目錄> init
-  git -C <目標專案根目錄> add .
-  git -C <目標專案根目錄> commit -m "2026xxxx-1 Initialize project structure and core guidelines"
-  ```
+> [!TIP]
+> **啟動完成後清理**：當專案成功初始化並解鎖啟用後，使用者或 Agent 可自行決定是否將本 README.md 中關於手動啟動的冗長指令說明刪除，僅保留專案介紹，以保持專案根目錄文件清爽。
 
 ---
 
-### 3. 第三階段：按需載入規格與藍圖 (從 doc/ 與 structure/ 複製)
+## 🔄 進度與版本同步自動化 (DoD Sync Automation)
 
-根據第二階段的討論結果，Agent 按需複製所需要的規格書範本，拒絕拷貝不必要的檔案，以防專案目錄膨脹。
+本專案模板內建了自動化同步腳本 `scripts/sync-project.py`，用於在任務完成時自動為 `plan/PROCESS.md` 待辦事項打勾，並推進版本號與更新熱記憶日誌。
 
-**🛠️ 執行指令 (以資料庫/設定檔規格為例)**：
-```powershell
-# 按需複製 data-schema 範本至 {目標專案}，並加上 -template 後綴
-cp <範本專案根目錄>/doc/data-schema.md <目標專案根目錄>/doc/data-schema-template.md
+### 1. 使用方式 (Usage)
+完成任務或日常變更後，在專案根目錄執行：
+```bash
+python scripts/sync-project.py [--bump patch|minor|major]
 ```
 
-**🤝 討論查核點**：
-* 複製後，Agent 配合使用者填寫相關規格細節，確保規格與設計精確。
+### 2. 核心規範 (Rules)
+*   **日誌格式**：同步前，必須確保 `logs/cold-history.log` 的最新一筆日誌中寫有 `todo_ref: 待辦項目名稱` (或與任務無關變更時寫 `todo_ref: null`) 以及 `commit: vX.Y.YYYYMMDD.Z Summary`。
+*   **版本號規格**：版本號強制遵循 `vX.Y.YYYYMMDD.Z` 規格，且必須作為對應 Git Commit 標題的前綴。
+    *   *Commit 範例*：`v1.0.20260701.1 Add database connection`
+*   **自我糾錯限制**：若同步腳本因格式不符拋出 `exit(1)`，Agent 最多執行 2 次自我糾錯重試，若仍失敗必須轉為 HITL 人工介入。
 
-**解鎖與啟用**：
-* 填寫完畢後，重命名移除後綴以解鎖：
-  ```powershell
-  mv <目標專案根目錄>/doc/data-schema-template.md <目標專案根目錄>/doc/data-schema.md
-  ```

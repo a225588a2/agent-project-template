@@ -68,26 +68,45 @@ AI Agent 每次開啟新對話或重新進入專案時，屬於「無狀態」�
 ## 3. 工作習慣與日誌記錄 (Work Habits & Log Records)
 
 - **維持進度更新**：隨時保持 `plan/PROCESS.md` 中進度狀態與待辦清單 (ToDo List) 的準確性。
-- **詳細執行日誌**：每次重大步驟執行完畢，應在 `logs/cold-history.log` 中以 append-only 方式記錄詳細執行結果，並在 `plan/MEMORY.md` 更新滾動式摘要與最新 3~5 筆索引。紀錄採「由舊到新，由上到下」的累積方式，且紀錄標題應與 Git Commit 的標題保持一致。
+- **詳細執行日誌**：每次重大步驟或任務完成時，應在 `logs/cold-history.log` 中以 append-only 方式記錄詳細執行結果，並包含結構化元數據（如 `todo_ref`, `commit`, `summary`）。
 
-### MEMORY.md 觸發條件
+### 🔄 進度與版本同步自動化 (DoD Sync Automation)
 
-以下 5 種情況**必須**觸發一筆 `plan/MEMORY.md` 紀錄（避免記錄過於瑣碎或過於稀疏）：
+本專案模板內建 `scripts/sync-project.py` 輔助腳本，用於簡化並自動化「任務打勾、版本號計算、熱記憶摘要更新、狀態 JSON 輸出」的工作流。
 
-1. **完成一項待辦事項**：`plan/PROCESS.md` 中的某個 ToDo 項目從 `[ ]` 轉為 `[x]` 時。
-2. **做出重大決策**：與使用者討論後確定了技術選型、架構方向或範疇調整。
-3. **修正錯誤或 Bug**：發現並修復了程式錯誤、文件謬誤或邏輯問題。
-4. **使用者提出特殊要求**：使用者要求了一項偏離常規流程的操作或特殊處理。
-5. **會話結束交接**：當次對話即將結束時，記錄未完成事項與下次開工的建議起點。
+#### 1. 腳本自動化同步流程 (推薦)
+1.  **日誌撰寫**：在 `logs/cold-history.log` 底端以 append-only 方式寫入最新變更日誌，並包含以下標籤：
+    ```text
+    [2026/07/01 v1.0.20260701.1] Add database connection
+    - todo_ref: 實作資料庫連線
+    - commit: v1.0.20260701.1 Initialize database connection modules
+    - summary:
+      * 建立 source/database-core.py 管理連線。
+      * 在 doc/data-schema.md 記錄連線配置。
+    ```
+    *(若為日常文檔修改等非任務型變更，請將 `todo_ref` 寫為 `null`，此時腳本將自動跳過待辦打勾，但照常推進版本與更新日誌。)*
+2.  **執行同步指令**：
+    ```bash
+    python scripts/sync-project.py [--bump patch|minor|major]
+    ```
+3.  **防禦性自我糾錯限制**：
+    * 同步腳本採用 **Strict Parsing (嚴格解析)**，當格式不符或 ToDo 不匹配時會直接以 `exit(1)` 中斷退出。
+    * AI Agent 面臨同步錯誤阻斷時，**最多允許執行 2 次自我糾錯重試**（透過閱讀錯誤 Traceback 來修正日誌）。若連續 2 次失敗，必須立刻暫警並轉為 HITL 人工介入，不可無限迴圈。
+
+#### 2. 手動更新備份操作指南 (Backup manual operations guide)
+若腳本在特定限制沙箱下無法執行，Agent 可使用以下手動路徑作為備份：
+1.  手動修改 `logs/cold-history.log` 記錄詳細日誌。
+2.  手動修改 `plan/MEMORY.md` 頂部的滾動式摘要與最近 3~5 筆變更索引。
+3.  手動讀取 `plan/PROCESS.md`，比對並將對應的 ToDo 改為 `[x]`，並手動計算遞增版本號回寫。
 
 ### Git Commit 規範
 
-- **Commit 標題格式**：標題**強制使用英文**，並以 `plan/MEMORY.md` 中對應的日期與索引開頭。
-  - *格式*：`{DateIndex} {English Summary}`
-  - *範例*：`20260618-1 Add feedback mechanism and git guide template`
+- **Commit 標題格式**：標題**強制使用英文**，並**必須以對應的版本號作為前綴**。
+  - *格式*：`{Version} {English Summary}`
+  - *範例*：`v1.0.20260701.1 Add database connection and git guide template`
   - *常用動詞表*：`Initialize` / `Add` / `Update` / `Fix` / `Refactor` / `Remove` / `Draft` / `Revise`
-- **Commit 描述**：列出本次變更的重點概要（**強制使用英文**），與 `MEMORY.md` 對應章節相呼應。
-- **版本號追溯策略**：專案版本號建議與 `plan/MEMORY.md` 的日誌索引綁定，採用格式 `v{Date}.{MemoryIndex}`（例如：`v20260618.2`），確保每個版本號都能 100% 追溯到對應的變更紀錄與 Git Commit。版本號應記錄在 `plan/PROCESS.md` 的「目前狀態」區段。
+- **Commit 描述**：列出本次變更的重點概要（**強制使用英文**），與日誌中的 summary 內容相呼應。
+- **版本號規格**：採用組合式版本號 **`vX.Y.YYYYMMDD.Z`**（X: 主版本, Y: 次版本, YYYYMMDD: 年月日, Z: 當天變更序號），記錄在 `plan/PROCESS.md` 的「目前狀態」區段。
 - **Git 操作遇到問題時**：請參閱 `plan/GIT-GUIDE.md`，其中定義了格式準則、錯誤處理與非標準情境的指引。
 
 ---
