@@ -20,6 +20,11 @@
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
+### v1.0.20260701.3 Add log version verification and transactional writing in sync-project.py (v1.0.20260701.3)
+- **變更項目**：
+  * 實作日誌宣告版本號與腳本計算版本的強一致性比對，若不合立即 exit(1)。
+  * 調整 sync-project.py 將版本修改寫入延遲至驗證通過後執行，避免中斷時檔案遭受污染。
+
 ### v1.0.20260701.2 Support flexible task checkbox parsing in sync-project.py (v1.0.20260701.2)
 - **變更項目**：
   * 引入正則表達式重構 sync-project.py 待辦判定。
@@ -42,8 +47,3 @@
 
 ### 20260628-1 導入多 Agent 討論議會與看板式交接協議 (v20260628.1)
 - **變更項目**：建立 `plan/COUNCIL.md`，定義主 Agent（協調者）、執行者（Executor）、批判者（Critic）三方流程。
-
-### 20260611-1 專案初始化與結構搭設 (v20260611.1)
-- **變更項目**：建立核心目錄結構與基礎工作規範。
-
-*(更早以前的變更明細與技術決策歷史，請參閱 [cold-history.log](file:///c:/PersonalWS/AgentSandBox/AiProjectTemplate/logs/cold-history.log))*

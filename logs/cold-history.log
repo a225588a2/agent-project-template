@@ -31,3 +31,10 @@
 - summary:
   * 引入正則表達式重構 sync-project.py 待辦判定。
   * 支援不同層級縮排、列表符號（-, *, +）與反引號括號（`[ ]`, `[/]`）樣式，並完美保留原始格式。
+
+[2026/07/01 v1.0.20260701.3] Add log version verification and transactional writing in sync-project.py
+- todo_ref: null
+- commit: v1.0.20260701.3 Add log version verification and transactional writing in sync-project.py
+- summary:
+  * 實作日誌宣告版本號與腳本計算版本的強一致性比對，若不合立即 exit(1)。
+  * 調整 sync-project.py 將版本修改寫入延遲至驗證通過後執行，避免中斷時檔案遭受污染。

@@ -234,11 +234,7 @@ def bump_version(process_path, bump_type):
     new_line = f"{prefix}{new_version}{suffix}"
     content = version_pattern.sub(new_line, content)
     
-    with open(process_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-        
-    print(f"[Info] Bumped version: {old_version} -> {new_version} in PROCESS.md.")
-    return new_version
+    return old_version, new_version, content
 
 def update_memory_md(memory_path, new_version, log_entry):
     if not os.path.exists(memory_path):
@@ -370,9 +366,28 @@ def main():
             
     # 3. Bump version
     try:
-        new_version = bump_version(process_path, args.bump)
+        old_version, new_version, new_process_content = bump_version(process_path, args.bump)
     except Exception as e:
-        print(f"\n[Error] Failed to bump version in PROCESS.md: {e}")
+        print(f"\n[Error] Failed to calculate version bump: {e}")
+        sys.exit(1)
+        
+    # Validate version consistency between log header and calculated version
+    log_version_normalized = log_entry["version"].lstrip('v')
+    new_version_normalized = new_version.lstrip('v')
+    if log_version_normalized != new_version_normalized:
+        print(f"\n[Strict Parsing Error] Version mismatch detected!")
+        print(f"  Version in logs/cold-history.log: v{log_version_normalized}")
+        print(f"  Calculated version in PROCESS.md: v{new_version_normalized}")
+        print("Please align the version in logs/cold-history.log to match the calculated progression and try again.\n")
+        sys.exit(1)
+        
+    # Commit version bump to PROCESS.md
+    try:
+        with open(process_path, 'w', encoding='utf-8') as f:
+            f.write(new_process_content)
+        print(f"[Info] Bumped version: {old_version} -> {new_version} in PROCESS.md.")
+    except Exception as e:
+        print(f"\n[Error] Failed to write version to PROCESS.md: {e}")
         sys.exit(1)
         
     # 4. Update MEMORY.md hot memory
