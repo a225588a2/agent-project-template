@@ -52,3 +52,10 @@
 - summary:
   * 修改 AGENT.md，將程式碼命名原則由「強制 snake_case」調整為「依程式語言標準慣例建議命名」（例如 Python 使用 snake_case）。
   * 避免強加 snake_case 於其他有各自標準命名慣例之語言中（如 JS/TS 的 camelCase 等）。
+
+[2026/07/01 v1.0.20260701.6] Add directory selection decision tree in AGENT.md
+- todo_ref: null
+- commit: v1.0.20260701.6 Add directory selection decision tree in AGENT.md
+- summary:
+  * 於 AGENT.md 新增「專案目錄增減決策樹」。
+  * 提供明確且結構化的決策問題，指引 Agent 在專案初始化時，能快速與使用者核對並判斷選用目錄（source, test, scripts, refer）之必要性。

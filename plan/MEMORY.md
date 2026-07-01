@@ -20,6 +20,11 @@
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
+### v1.0.20260701.6 Add directory selection decision tree in AGENT.md (v1.0.20260701.6)
+- **變更項目**：
+  * 於 AGENT.md 新增「專案目錄增減決策樹」。
+  * 提供明確且結構化的決策問題，指引 Agent 在專案初始化時，能快速與使用者核對並判斷選用目錄（source, test, scripts, refer）之必要性。
+
 ### v1.0.20260701.5 Soften code naming rules in AGENT.md (v1.0.20260701.5)
 - **變更項目**：
   * 修改 AGENT.md，將程式碼命名原則由「強制 snake_case」調整為「依程式語言標準慣例建議命名」（例如 Python 使用 snake_case）。
@@ -39,9 +44,3 @@
 - **變更項目**：
   * 引入正則表達式重構 sync_project.py 待辦判定。
   * 支援不同層級縮排、列表符號（-, *, +）與反引號括號（`[ ]`, `[/]`）樣式，並完美保留原始格式。
-
-### v1.0.20260701.1 Implement project template automation scripts (v1.0.20260701.1)
-- **變更項目**：
-  * 實作 scripts/bootstrap.py，建立零依賴、參數驅動之初始化工具，並提供手動與腳本並存路徑。
-  * 實作 scripts/sync_project.py，實現 ToDo 看板打勾、版本號遞增與熱記憶更新。
-  * 文件並存優化，於 README.md、AGENT.md、COUNCIL.md 寫入對應工具鏈規範。
