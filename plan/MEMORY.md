@@ -20,6 +20,11 @@
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
+### v1.0.20260701.2 Support flexible task checkbox parsing in sync-project.py (v1.0.20260701.2)
+- **變更項目**：
+  * 引入正則表達式重構 sync-project.py 待辦判定。
+  * 支援不同層級縮排、列表符號（-, *, +）與反引號括號（`[ ]`, `[/]`）樣式，並完美保留原始格式。
+
 ### v1.0.20260701.1 Implement project template automation scripts (v1.0.20260701.1)
 - **變更項目**：
   * 實作 scripts/bootstrap.py，建立零依賴、參數驅動之初始化工具，並提供手動與腳本並存路徑。

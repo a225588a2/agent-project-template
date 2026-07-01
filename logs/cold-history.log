@@ -24,3 +24,10 @@
   * 實作 scripts/bootstrap.py，建立零依賴、參數驅動之初始化工具，並提供手動與腳本並存路徑。
   * 實作 scripts/sync-project.py，實現 ToDo 看板打勾、版本號遞增與熱記憶更新。
   * 文件並存優化，於 README.md、AGENT.md、COUNCIL.md 寫入對應工具鏈規範。
+
+[2026/07/01 v1.0.20260701.2] Support flexible task checkbox parsing in sync-project.py
+- todo_ref: null
+- commit: v1.0.20260701.2 Support flexible task checkbox parsing in sync-project.py
+- summary:
+  * 引入正則表達式重構 sync-project.py 待辦判定。
+  * 支援不同層級縮排、列表符號（-, *, +）與反引號括號（`[ ]`, `[/]`）樣式，並完美保留原始格式。

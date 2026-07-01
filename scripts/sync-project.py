@@ -134,12 +134,12 @@ def parse_last_log_entry(log_path):
 def get_open_todos(process_path):
     todos = []
     if os.path.exists(process_path):
+        todo_pattern = re.compile(r'^\s*[\-\*\+]\s+`?\[([\s\/])\]`?\s*(.*)$')
         with open(process_path, 'r', encoding='utf-8') as f:
             for line in f:
-                if "- [ ]" in line:
-                    todos.append(line.replace("- [ ]", "").strip())
-                elif "- [/]" in line:
-                    todos.append(line.replace("- [/]", "").strip())
+                match = todo_pattern.match(line)
+                if match:
+                    todos.append(match.group(2).strip())
     return todos
 
 def sync_todos(process_path, todo_ref_val):
@@ -153,19 +153,19 @@ def sync_todos(process_path, todo_ref_val):
     matched_count = 0
     new_lines = []
     
+    # Matches markdown list checkboxes with optional backticks and indentations
+    todo_pattern = re.compile(r'^(\s*[\-\*\+]\s+`?)\[([\s\/])\](`?\s*)(.*)$')
+    
     for line in lines:
-        matched = False
-        for marker in ["- [ ]", "- [/]"]:
-            if marker in line:
-                todo_content = line.split(marker)[1].strip()
-                clean_todo = clean_text(todo_content)
-                
-                # Double-sided substring matching
-                if clean_ref in clean_todo or clean_todo in clean_ref:
-                    line = line.replace(marker, "- [x]")
-                    matched_count += 1
-                    matched = True
-                    break
+        match = todo_pattern.match(line)
+        if match:
+            prefix, marker_content, suffix, todo_text = match.groups()
+            clean_todo = clean_text(todo_text)
+            
+            # Double-sided substring matching
+            if clean_ref in clean_todo or clean_todo in clean_ref:
+                line = f"{prefix}[x]{suffix}{todo_text}\n"
+                matched_count += 1
         new_lines.append(line)
         
     if matched_count == 0:
