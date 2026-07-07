@@ -66,3 +66,14 @@
 - summary:
   * 於 AGENT.md 新增 4 個核心目錄的職責定義，並說明規則需隨物理目錄現況進行增補與動態更新。
   * 清理 AGENT.md 護欄與 DoD 完成條件中殘存的舊版 MEMORY.md 手動同步描述，統一對齊為 sync_project.py 自動化工作流。
+
+[2026/07/07 v1.0.20260707.1] Introduce Git Hook mechanism for commit check validation
+- todo_ref: null
+- commit: v1.0.20260707.1 Introduce Git Hook mechanism for commit check validation
+- summary:
+  * Implement scripts/git_hook_validator.py for commit format, CJK filter, and project version check.
+  * Implement scripts/install_hooks.py to setup CWD-independent and alias-safe hook wrappers.
+  * Integrate hook installation into scripts/bootstrap.py.
+  * Refactor scripts/sync_project.py to remove redundant git check warnings and add log diagnostics.
+  * Write final design consensus to doc/proposals/COUNCIL_DECISION.md.
+

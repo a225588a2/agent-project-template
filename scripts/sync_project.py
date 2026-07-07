@@ -61,6 +61,20 @@ def parse_last_log_entry(log_path):
     # Header pattern: [YYYY/MM/DD vX.Y.YYYYMMDD.Z] English Summary
     header_pattern = re.compile(r'^\[\d{4}/\d{2}/\d{2}\s+v\d+\.\d+\.\d{8}\.\d+\].*$')
     
+    # Check for silent typos/malformed headers in cold-history.log
+    last_bracket_line = None
+    for line in reversed(lines):
+        if line.startswith("["):
+            last_bracket_line = line.strip()
+            break
+            
+    if last_bracket_line and not header_pattern.match(last_bracket_line):
+        raise ValueError(
+            f"Latest log entry header in logs/cold-history.log is malformed.\n"
+            f"Expected: [YYYY/MM/DD vX.Y.YYYYMMDD.Z] English Summary\n"
+            f"Got:      '{last_bracket_line}'"
+        )
+    
     for idx, line in enumerate(lines):
         if header_pattern.match(line.strip()):
             header_indices.append(idx)
@@ -296,22 +310,7 @@ def update_memory_md(memory_path, new_version, log_entry):
         
     print("[Info] Updated MEMORY.md change indexes.")
 
-def check_git_commit(log_version):
-    try:
-        latest_commit = subprocess.check_output(
-            ["git", "log", "-1", "--pretty=format:%s"],
-            stderr=subprocess.DEVNULL
-        ).decode("utf-8").strip()
-        
-        if not latest_commit.startswith(log_version):
-            print(f"\n[Warning] Latest Git commit title does not start with the log version '{log_version}'.")
-            print(f"Latest Git commit title: '{latest_commit}'")
-            print(f"[Git Command Tip] git commit --amend -m \"{log_version} [Your Summary]\"\n")
-        else:
-            print(f"[Info] Git commit check passed: Title matches '{log_version}'.")
-    except Exception:
-        # Not a git repo or git not installed, skip check silently
-        pass
+
 
 def save_state(state_path, new_version, last_task, open_todos):
     state_data = {
@@ -396,8 +395,7 @@ def main():
     except Exception as e:
         print(f"[Warning] Failed to update MEMORY.md: {e}")
         
-    # 5. Check Git Commit title matching
-    check_git_commit(log_entry["version"])
+
     
     # 6. Save State JSON
     open_todos = get_open_todos(process_path)

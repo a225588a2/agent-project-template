@@ -20,6 +20,14 @@
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
+### v1.0.20260707.1 Introduce Git Hook mechanism for commit check validation (v1.0.20260707.1)
+- **變更項目**：
+  * Implement scripts/git_hook_validator.py for commit format, CJK filter, and project version check.
+  * Implement scripts/install_hooks.py to setup CWD-independent and alias-safe hook wrappers.
+  * Integrate hook installation into scripts/bootstrap.py.
+  * Refactor scripts/sync_project.py to remove redundant git check warnings and add log diagnostics.
+  * Write final design consensus to doc/proposals/COUNCIL_DECISION.md.
+
 ### v1.0.20260701.7 Update directory definitions and clean up obsolete checklists in AGENT.md (v1.0.20260701.7)
 - **變更項目**：
   * 於 AGENT.md 新增 4 個核心目錄的職責定義，並說明規則需隨物理目錄現況進行增補與動態更新。
@@ -39,8 +47,3 @@
 - **變更項目**：
   * 更新 AGENT.md 命名規範，區分文件（kebab-case）與程式碼/腳本（snake_case）命名原則。
   * 將 scripts/sync-project.py 重新命名為 scripts/sync_project.py，並修正所有相關引用以防止 Python import 語法錯誤。
-
-### v1.0.20260701.3 Add log version verification and transactional writing in sync_project.py (v1.0.20260701.3)
-- **變更項目**：
-  * 實作日誌宣告版本號與腳本計算版本的強一致性比對，若不合立即 exit(1)。
-  * 調整 sync_project.py 將版本修改寫入延遲至驗證通過後執行，避免中斷時檔案遭受污染。

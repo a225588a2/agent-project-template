@@ -109,7 +109,7 @@ def main():
     # 3. Create directories and copy template files
     os.makedirs(target_dir, exist_ok=True)
     
-    core_dirs = ["plan", "doc", "structure", "logs"]
+    core_dirs = ["plan", "doc", "structure", "logs", "scripts"]
     for d in core_dirs:
         os.makedirs(os.path.join(target_dir, d), exist_ok=True)
         
@@ -133,7 +133,10 @@ def main():
         ("plan/COUNCIL.md", "plan/COUNCIL.md"),
         ("logs/cold-history.log", "logs/cold-history.log"),
         (".gitignore", ".gitignore"),
-        ("README.md", "README.md")
+        ("README.md", "README.md"),
+        ("scripts/sync_project.py", "scripts/sync_project.py"),
+        ("scripts/git_hook_validator.py", "scripts/git_hook_validator.py"),
+        ("scripts/install_hooks.py", "scripts/install_hooks.py")
     ]
     
     today_str = datetime.now().strftime("%Y%m%d")
@@ -191,11 +194,31 @@ def main():
 
     # 5. Local Git initialization check (Strictly localized)
     git_dir = os.path.join(target_dir, ".git")
+    git_initialized_now = False
     if not os.path.exists(git_dir):
         print("[Info] No Git repository detected in target directory. Initializing Git...")
         try:
             # Run git init
             subprocess.run(["git", "init"], cwd=target_dir, check=True, stdout=subprocess.DEVNULL)
+            git_initialized_now = True
+            print("[Success] Git repository initialized.")
+        except Exception as e:
+            print(f"[Warning] Git initialization failed: {e}. Please run git commands manually.")
+    else:
+        print("[Info] Existing Git repository detected in target directory. Skipping Git initialization.")
+
+    # Install Git hooks if Git repository exists
+    if os.path.exists(git_dir):
+        try:
+            sys.path.append(os.path.join(target_dir, "scripts"))
+            from install_hooks import install_hooks
+            install_hooks(target_dir)
+        except Exception as e:
+            print(f"[Warning] Failed to automatically install Git hooks: {e}")
+
+    # If Git was initialized just now, create the initial zero-commit
+    if git_initialized_now:
+        try:
             # Run git add
             subprocess.run(["git", "add", "."], cwd=target_dir, check=True, stdout=subprocess.DEVNULL)
             # Run git commit
@@ -205,11 +228,9 @@ def main():
                 check=True,
                 stdout=subprocess.DEVNULL
             )
-            print(f"[Success] Initialized Git repository and created zero-commit: {initial_version}")
+            print(f"[Success] Created zero-commit: {initial_version}")
         except Exception as e:
-            print(f"[Warning] Git initialization failed: {e}. Please run git commands manually.")
-    else:
-        print("[Info] Existing Git repository detected in target directory. Skipping Git initialization.")
+            print(f"[Warning] Creating initial commit failed: {e}. Please commit files manually.")
 
     # 6. Save JSON config file
     config_data["name"] = proj_name
