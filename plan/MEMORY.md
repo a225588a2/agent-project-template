@@ -20,6 +20,12 @@
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
 
+### v1.0.20260707.2 Update project documentation to describe the Git Hook validation mechanism (v1.0.20260707.2)
+- **變更項目**：
+  * Update README.md to describe Git Commit Validation Hooks, CJK filter, and manual setup step.
+  * Update plan/AGENT.md to include Git Hook validation in commit guidelines and task completion checklist.
+  * Update plan/GIT-GUIDE.md to introduce a dedicated section explaining hook checks and validation rules.
+
 ### v1.0.20260707.1 Introduce Git Hook mechanism for commit check validation (v1.0.20260707.1)
 - **變更項目**：
   * Implement scripts/git_hook_validator.py for commit format, CJK filter, and project version check.
@@ -42,8 +48,3 @@
 - **變更項目**：
   * 修改 AGENT.md，將程式碼命名原則由「強制 snake_case」調整為「依程式語言標準慣例建議命名」（例如 Python 使用 snake_case）。
   * 避免強加 snake_case 於其他有各自標準命名慣例之語言中（如 JS/TS 的 camelCase 等）。
-
-### v1.0.20260701.4 Refine naming convention: docs kebab-case, code snake_case (v1.0.20260701.4)
-- **變更項目**：
-  * 更新 AGENT.md 命名規範，區分文件（kebab-case）與程式碼/腳本（snake_case）命名原則。
-  * 將 scripts/sync-project.py 重新命名為 scripts/sync_project.py，並修正所有相關引用以防止 Python import 語法錯誤。

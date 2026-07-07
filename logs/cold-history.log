@@ -77,3 +77,12 @@
   * Refactor scripts/sync_project.py to remove redundant git check warnings and add log diagnostics.
   * Write final design consensus to doc/proposals/COUNCIL_DECISION.md.
 
+[2026/07/07 v1.0.20260707.2] Update project documentation to describe the Git Hook validation mechanism
+- todo_ref: null
+- commit: v1.0.20260707.2 Update project documentation to describe the Git Hook validation mechanism
+- summary:
+  * Update README.md to describe Git Commit Validation Hooks, CJK filter, and manual setup step.
+  * Update plan/AGENT.md to include Git Hook validation in commit guidelines and task completion checklist.
+  * Update plan/GIT-GUIDE.md to introduce a dedicated section explaining hook checks and validation rules.
+
+

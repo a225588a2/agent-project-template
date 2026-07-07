@@ -175,3 +175,23 @@ python scripts/sync_project.py [--bump patch|minor|major]
     *   *Commit 範例*：`v1.0.20260701.1 Add database connection`
 *   **自我糾錯限制**：若同步腳本因格式不符拋出 `exit(1)`，Agent 最多執行 2 次自我糾錯重試，若仍失敗必須轉為 HITL 人工介入。
 
+---
+
+## ⚓ Git Commit 驗證機制 (Git Commit Validation Hooks)
+
+本專案配置了 `pre-commit` 與 `commit-msg` git hooks，在 commit 時自動強制驗證專案狀態與 Commit 格式，避免非合規變更被提交。
+
+### 1. 驗證內容
+- **檔案一致性**：確保 `plan/PROCESS.md`、`logs/cold-history.log` 與 `.sync-state.json` 版號完全一致（即 commit 前有確實執行 `sync_project.py`）。
+- **Commit 標題**：必須以當前同步版號為前綴，格式為 `vX.Y.YYYYMMDD.Z English Summary`。
+- **語系限制**：Commit 訊息（標題與描述）強制使用英文（阻擋中日韓 CJK 字元及全形標點）。
+
+### 2. 安裝與部署
+若是新專案透過 `scripts/bootstrap.py` 初始化，Hooks 將自動啟用。若是手動 clone 本儲存庫，請在專案根目錄執行以下指令啟用 Hooks：
+```bash
+python scripts/install_hooks.py
+```
+
+### 3. 繞過檢查
+若需要提交臨時/未完成之 WIP 變更，可使用 `git commit -m "WIP" --no-verify` 繞過 Hook 驗證。
+

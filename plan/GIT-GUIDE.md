@@ -77,3 +77,22 @@
 ### 修改歷史 Commit 訊息
 - 最近一次：`git commit --amend -m "new message"`
 - 更早的 Commit：使用 `git rebase -i`，但**絕不對已推送至遠端的 Commit 進行 rebase**。
+
+---
+
+## 6. Git Hook 自動化驗證機制 (Git Hooks)
+
+本專案配置了 `pre-commit` 與 `commit-msg` 提交攔截驗證機制，用以自動保證專案狀態與 Commit 品質。
+
+### 驗證規則
+- **同步檢核 (`pre-commit`)**：比對 `plan/PROCESS.md`、`logs/cold-history.log` 與 `.sync-state.json` 的版號，若未同步則阻擋提交。
+- **Commit 訊息檢核 (`commit-msg`)**：
+  - 強制 Commit 標題必須以當前同步版號為前綴，格式為 `vX.Y.YYYYMMDD.Z English Summary`。
+  - 強制 Commit 訊息（標題與描述）只能使用英文（不允許中、日、韓 CJK 字元與全形標點）。
+
+### 安裝方式
+- **新建立專案**：使用 `scripts/bootstrap.py` 時會自動安裝。
+- **手動/重新安裝**：在專案根目錄執行 `python scripts/install_hooks.py` 即可。
+
+### 繞過驗證 (Bypass)
+- 若有臨時或 WIP 備份需求，必須在 commit 時加入 `--no-verify`（例如 `git commit -m "WIP" --no-verify`）來繞過 Hook 驗證。

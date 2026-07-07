@@ -115,7 +115,9 @@ AI Agent 每次開啟新對話或重新進入專案時，屬於「無狀態」�
   - *常用動詞表*：`Initialize` / `Add` / `Update` / `Fix` / `Refactor` / `Remove` / `Draft` / `Revise`
 - **Commit 描述**：列出本次變更的重點概要（**強制使用英文**），與日誌中的 summary 內容相呼應。
 - **版本號規格**：採用組合式版本號 **`vX.Y.YYYYMMDD.Z`**（X: 主版本, Y: 次版本, YYYYMMDD: 年月日, Z: 當天變更序號），記錄在 `plan/PROCESS.md` 的「目前狀態」區段。
+- **Git Hook 自動驗證**：專案已導入 Git Hook 機制。執行 `git commit` 時會自動啟動 `pre-commit` 與 `commit-msg` 檢查版號同步狀態、Commit 標題格式與英文語系。若未通過驗證 Commit 將被阻擋。如需提交臨時的 WIP 變更，可加上 `--no-verify` 參數繞過。
 - **Git 操作遇到問題時**：請參閱 `plan/GIT-GUIDE.md`，其中定義了格式準則、錯誤處理與非標準情境的指引。
+
 
 ---
 
@@ -154,7 +156,8 @@ Agent 在聲稱一項任務「已完成」之前，必須逐項確認以下事�
 - [ ] 執行 `sync_project.py` 完成同步，確認 `plan/PROCESS.md` 中待辦事項已自動打勾 `[x]`，且 `plan/MEMORY.md` 變更索引已更新。
 - [ ] 若有程式碼變更，已執行測試或驗證步驟並確認通過。
 - [ ] 若有新增/刪除/重新命名檔案，`structure/` 底下的模組地圖仍然準確。
-- [ ] 已使用 Git Commit 提交全部變更。
+- [ ] 已使用 Git Commit 提交全部變更（驗證 Git Hook 順利通過且無報錯）。
+
 
 ---
 
