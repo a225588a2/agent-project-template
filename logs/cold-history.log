@@ -85,4 +85,13 @@
   * Update plan/AGENT.md to include Git Hook validation in commit guidelines and task completion checklist.
   * Update plan/GIT-GUIDE.md to introduce a dedicated section explaining hook checks and validation rules.
 
+[2026/07/16 v1.0.20260716.1] Implement YAML as Single Source of Truth specification template
+- todo_ref: 實作 YAML 唯一真理架構範本與轉換指南
+- commit: v1.0.20260716.1 Implement YAML as Single Source of Truth specification template
+- summary:
+  * Initiate Multi-Agent Council to debate and design the YAML-as-SSoT architecture.
+  * Add doc/yaml-truth-spec.md as the main specification and conversion template.
+  * Add doc/proposals/COUNCIL_DECISION_YAML.md to document the council decision and safety controls.
+  * Archive and clean up the temporary .council/ workspace files to logs/archived/council-archive.zip.
+
 
