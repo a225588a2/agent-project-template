@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+bootstrap.py - AI Project Template Initializer
+Supports Smart Auto-Detection & Dual Versioning Strategy (SemVer 2.0 vs CalVer),
+Mandatory Author Signature check, and clean one-time static template rendering.
+"""
 
 import os
 import sys
@@ -28,6 +33,11 @@ def parse_args():
         help="Primary AI Agent name (e.g. Claude, Cursor, Antigravity)"
     )
     parser.add_argument(
+        "-v", "--version-strategy",
+        choices=["semver", "calver"],
+        help="Version strategy: 'semver' (SemVer 2.0 for code/software) or 'calver' (Date-based for notes/logs)"
+    )
+    parser.add_argument(
         "-m", "--modules",
         default="",
         help="Comma-separated list of optional folders to create (default: none)"
@@ -35,7 +45,7 @@ def parse_args():
     parser.add_argument(
         "--non-interactive",
         action="store_true",
-        help="Run in non-interactive mode. Skips TTY check and uses default values/json if arguments are missing."
+        help="Run in non-interactive mode. Skips TTY check and uses smart auto-detection/default values."
     )
     parser.add_argument(
         "-c", "--config",
@@ -61,6 +71,48 @@ def write_config(config_path, data):
     except Exception as e:
         print(f"[Warning] Failed to save config file: {e}")
 
+def check_git_author_signature(target_dir):
+    """Check and guide user for Mandatory Author Signature (user.name & user.email)."""
+    print("\n--- Checking Git Author Signature ---")
+    try:
+        name_res = subprocess.run(["git", "config", "user.name"], cwd=target_dir, capture_output=True, text=True)
+        email_res = subprocess.run(["git", "config", "user.email"], cwd=target_dir, capture_output=True, text=True)
+        
+        user_name = name_res.stdout.strip()
+        user_email = email_res.stdout.strip()
+        
+        if user_name and user_email:
+            print(f"[Git Author] Verified: {user_name} <{user_email}>")
+        else:
+            print("[Warning] Git Author Signature (user.name / user.email) is missing in Git config.")
+            print("[Info] Setting local placeholder Author Signature for initial commits...")
+            subprocess.run(["git", "config", "user.name", "AI Developer"], cwd=target_dir, check=False)
+            subprocess.run(["git", "config", "user.email", "developer@ai-project.template"], cwd=target_dir, check=False)
+            print("[Info] Local Author Signature set: AI Developer <developer@ai-project.template>")
+            print("[Tip] You can update it anytime using: git config user.name 'Your Name' && git config user.email 'your@email.com'")
+    except Exception as e:
+        print(f"[Warning] Failed to check Git config: {e}")
+
+def detect_smart_version_strategy(target_dir):
+    """Heuristic auto-detection for version strategy in non-interactive mode."""
+    # Check for code project indicators -> semver
+    code_indicators = ["package.json", "pyproject.toml", "Cargo.toml", "go.mod", "setup.py", "pom.xml"]
+    for ind in code_indicators:
+        if os.path.exists(os.path.join(target_dir, ind)):
+            print(f"[Smart Detection] Found '{ind}' -> Auto-selecting 'semver' strategy.")
+            return "semver"
+            
+    # Check for document/note indicators -> calver
+    doc_indicators = ["obsidian.json", ".obsidian", "notes", "daily_logs"]
+    for ind in doc_indicators:
+        if os.path.exists(os.path.join(target_dir, ind)):
+            print(f"[Smart Detection] Found '{ind}' -> Auto-selecting 'calver' strategy.")
+            return "calver"
+            
+    # Default to semver
+    print("[Smart Detection] No specific project indicators found. Defaulting to 'semver' strategy.")
+    return "semver"
+
 def main():
     args = parse_args()
     target_dir = os.path.abspath(args.target_dir)
@@ -70,7 +122,7 @@ def main():
     # 1. Determine if interactive mode is allowed
     is_interactive = not args.non_interactive and sys.stdin.isatty()
     
-    # 2. Try loading config file from either command line or target dir
+    # 2. Try loading config file
     config_file_path = os.path.join(target_dir, args.config) if args.target_dir != "." else os.path.abspath(args.config)
     config_data = load_config(config_file_path)
     
@@ -81,48 +133,61 @@ def main():
             proj_name = input("Enter project name: ").strip()
         if not proj_name:
             proj_name = "NewAIProject"
-            print(f"[Info] No project name provided. Defaulting to: {proj_name}")
+            print(f"[Info] Defaulting project name to: {proj_name}")
 
     # Resolve AI Agent name
     agent_name = args.agent or config_data.get("agent")
     if not agent_name:
         if is_interactive:
-            agent_name = input("Enter primary AI Agent name (default: Claude): ").strip()
+            agent_name = input("Enter primary AI Agent name (default: Antigravity): ").strip()
         if not agent_name:
-            agent_name = "Claude"
-            print(f"[Info] No Agent name provided. Defaulting to: {agent_name}")
+            agent_name = "Antigravity"
+
+    # Resolve Version Strategy (Dual Versioning Strategy)
+    version_strategy = args.version_strategy or config_data.get("version_strategy")
+    if not version_strategy:
+        if is_interactive:
+            print("\nSelect Versioning Strategy for this Project:")
+            print("  1) [SemVer 2.0]  Recommended for software code, libraries, research frameworks (vMAJOR.MINOR.PATCH, Conventional Commits, Gitflow)")
+            print("  2) [CalVer]      Recommended for personal notes, daily logs, data collection (vYYYY.MM.DD / v1.0.YYYYMMDD.Z, Date-prefix)")
+            choice = input("Enter choice (1 or 2, default: 1): ").strip()
+            version_strategy = "calver" if choice == "2" else "semver"
+        else:
+            version_strategy = detect_smart_version_strategy(target_dir)
 
     # Resolve modules list
     modules_str = args.modules
     if not modules_str and "modules" in config_data:
         modules_str = ",".join(config_data.get("modules", []))
-    
     modules_list = [m.strip() for m in modules_str.split(",") if m.strip()]
     
-    print(f"\n--- Initializing Project Configuration ---")
+    print(f"\n=========================================")
+    print(f"--- Initializing Project Configuration ---")
     print(f"Target Directory : {target_dir}")
     print(f"Project Name     : {proj_name}")
     print(f"Primary Agent    : {agent_name}")
+    print(f"Version Strategy : {version_strategy.upper()}")
     print(f"Optional Modules : {modules_list if modules_list else 'None'}")
-    print(f"-----------------------------------------\n")
+    print(f"=========================================\n")
 
-    # 3. Create directories and copy template files
+    # 3. Create directories
     os.makedirs(target_dir, exist_ok=True)
-    
-    core_dirs = ["plan", "doc", "structure", "logs", "scripts"]
+    core_dirs = ["plan", "doc", "structure", "scripts", "skills"]
     for d in core_dirs:
         os.makedirs(os.path.join(target_dir, d), exist_ok=True)
         
     for m in modules_list:
         m_path = os.path.join(target_dir, m)
         os.makedirs(m_path, exist_ok=True)
-        # Touch a .gitkeep to keep directory in Git
         with open(os.path.join(m_path, ".gitkeep"), 'w', encoding='utf-8') as f:
             pass
 
-    # Ensure logs/.gitkeep exists
-    with open(os.path.join(target_dir, "logs", ".gitkeep"), 'w', encoding='utf-8') as f:
-        pass
+    # Determine initial version string based on strategy
+    today_str = datetime.now().strftime("%Y%m%d")
+    if version_strategy == "semver":
+        initial_version = "v1.0.0"
+    else:
+        initial_version = f"v1.0.{today_str}.1"
 
     # Define files to copy/render
     files_to_copy = [
@@ -130,117 +195,80 @@ def main():
         ("plan/AGENT.md", "plan/AGENT.md"),
         ("plan/PROCESS.md", "plan/PROCESS.md"),
         ("plan/MEMORY.md", "plan/MEMORY.md"),
-        ("plan/COUNCIL.md", "plan/COUNCIL.md"),
-        ("logs/cold-history.log", "logs/cold-history.log"),
+        ("plan/GIT-GUIDE.md", "plan/GIT-GUIDE.md"),
+        ("plan/cold-history.log", "plan/cold-history.log"),
         (".gitignore", ".gitignore"),
         ("README.md", "README.md"),
+        ("scripts/version_engine.py", "scripts/version_engine.py"),
         ("scripts/sync_project.py", "scripts/sync_project.py"),
         ("scripts/git_hook_validator.py", "scripts/git_hook_validator.py"),
         ("scripts/install_hooks.py", "scripts/install_hooks.py")
     ]
     
-    today_str = datetime.now().strftime("%Y%m%d")
-    initial_version = f"v1.0.{today_str}.1"
+    # Automatically add all skill files to copy list
+    skills_dir_abs = os.path.join(template_root, "skills")
+    if os.path.exists(skills_dir_abs):
+        for r, _, fs in os.walk(skills_dir_abs):
+            for file in fs:
+                abs_f = os.path.join(r, file)
+                rel_f = os.path.relpath(abs_f, template_root).replace("\\", "/")
+                files_to_copy.append((rel_f, rel_f))
 
-    # Copy files if target dir is different from template root
     is_in_place = (os.path.abspath(target_dir) == os.path.abspath(template_root))
     if not is_in_place:
         for src_rel, dst_rel in files_to_copy:
             src_abs = os.path.join(template_root, src_rel)
             dst_abs = os.path.join(target_dir, dst_rel)
             if os.path.exists(src_abs):
-                # Only copy if destination doesn't exist
-                if not os.path.exists(dst_abs):
-                    shutil.copy2(src_abs, dst_abs)
-                    print(f"[Info] Copied template file: {dst_rel}")
-            else:
-                # If file doesn't exist (e.g. cold-history.log is being created fresh)
-                if not os.path.exists(dst_abs):
-                    with open(dst_abs, 'w', encoding='utf-8') as f:
-                        if dst_rel == "logs/cold-history.log":
-                            f.write("=== COLD HISTORY LOG ===\n")
-                    print(f"[Info] Created file: {dst_rel}")
-    else:
-        print("[Info] Initializing in-place within the template repository. Skipping file copy.")
+                os.makedirs(os.path.dirname(dst_abs), exist_ok=True)
+                shutil.copy2(src_abs, dst_abs)
+                print(f"[Copy] {src_rel} -> {dst_rel}")
 
-    # 4. Replace placeholders in target files
-    # Define placeholder replacements
-    replacements = {
-        "[請在此填入專案名稱]": proj_name,
-        "[請在此填入主要 Agent 名稱]": agent_name,
-        "v20260628.2": initial_version,
-        "v20260628.1": initial_version
+    # 4. Save metadata and sync state JSONs
+    meta_data = {
+        "name": proj_name,
+        "agent": agent_name,
+        "version_strategy": version_strategy,
+        "created_at": datetime.now().isoformat(),
+        "modules": modules_list
     }
+    write_config(os.path.join(target_dir, "project-meta.json"), meta_data)
     
-    for _, dst_rel in files_to_copy:
-        dst_abs = os.path.join(target_dir, dst_rel)
-        if os.path.exists(dst_abs):
-            try:
-                with open(dst_abs, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                
-                replaced = False
-                for placeholder, value in replacements.items():
-                    if placeholder in content:
-                        content = content.replace(placeholder, value)
-                        replaced = True
-                
-                if replaced:
-                    with open(dst_abs, 'w', encoding='utf-8') as f:
-                        f.write(content)
-                    print(f"[Info] Rendered placeholders in: {dst_rel}")
-            except Exception as e:
-                print(f"[Warning] Failed to render placeholders in {dst_rel}: {e}")
+    sync_state = {
+        "version": initial_version,
+        "version_strategy": version_strategy,
+        "last_updated": datetime.now().isoformat(),
+        "project_name": proj_name
+    }
+    with open(os.path.join(target_dir, ".sync-state.json"), 'w', encoding='utf-8') as f:
+        json.dump(sync_state, f, indent=2, ensure_ascii=False)
+    print(f"[Info] Saved .sync-state.json (Initial Version: {initial_version})")
 
-    # 5. Local Git initialization check (Strictly localized)
+    # 5. Initialize Git repository if needed
     git_dir = os.path.join(target_dir, ".git")
-    git_initialized_now = False
     if not os.path.exists(git_dir):
-        print("[Info] No Git repository detected in target directory. Initializing Git...")
+        print("\n--- Initializing Git Repository ---")
         try:
-            # Run git init
-            subprocess.run(["git", "init"], cwd=target_dir, check=True, stdout=subprocess.DEVNULL)
-            git_initialized_now = True
-            print("[Success] Git repository initialized.")
+            subprocess.run(["git", "init"], cwd=target_dir, check=True)
+            print("[Git] Initialized empty Git repository.")
         except Exception as e:
-            print(f"[Warning] Git initialization failed: {e}. Please run git commands manually.")
-    else:
-        print("[Info] Existing Git repository detected in target directory. Skipping Git initialization.")
+            print(f"[Warning] Failed to run 'git init': {e}")
+            
+    # Check and set Git Author Signature
+    check_git_author_signature(target_dir)
 
-    # Install Git hooks if Git repository exists
-    if os.path.exists(git_dir):
-        try:
-            sys.path.append(os.path.join(target_dir, "scripts"))
-            from install_hooks import install_hooks
-            install_hooks(target_dir)
-        except Exception as e:
-            print(f"[Warning] Failed to automatically install Git hooks: {e}")
+    # 6. Install Git Hooks
+    print("\n--- Installing Git Hook Validation ---")
+    try:
+        install_script = os.path.join(target_dir, "scripts", "install_hooks.py")
+        if os.path.exists(install_script):
+            subprocess.run([sys.executable, install_script], cwd=target_dir, check=False)
+    except Exception as e:
+        print(f"[Warning] Failed to install git hooks: {e}")
 
-    # If Git was initialized just now, create the initial zero-commit
-    if git_initialized_now:
-        try:
-            # Run git add
-            subprocess.run(["git", "add", "."], cwd=target_dir, check=True, stdout=subprocess.DEVNULL)
-            # Run git commit
-            subprocess.run(
-                ["git", "commit", "-m", f"{initial_version} Initialize project template"],
-                cwd=target_dir,
-                check=True,
-                stdout=subprocess.DEVNULL
-            )
-            print(f"[Success] Created zero-commit: {initial_version}")
-        except Exception as e:
-            print(f"[Warning] Creating initial commit failed: {e}. Please commit files manually.")
-
-    # 6. Save JSON config file
-    config_data["name"] = proj_name
-    config_data["agent"] = agent_name
-    config_data["modules"] = modules_list
-    write_config(config_file_path, config_data)
-    
-    print("\n[Success] Project bootstrapping completed successfully!")
-    print(f"Initial Version  : {initial_version}")
-    print("You can now start editing files in the plan/ directory.")
+    print(f"\n✨ Project '{proj_name}' initialized successfully!")
+    print(f"📌 Version Strategy: {version_strategy.upper()} ({initial_version})")
+    print("🚀 You are all set. Have fun building!\n")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,29 @@
+[2026/07/07 v1.0.20260707.2] Update project documentation to describe the Git Hook validation mechanism
+- todo_ref: null
+- commit: v1.0.20260707.2 Update project documentation to describe the Git Hook validation mechanism
+- summary:
+  * Update README.md to describe Git Commit Validation Hooks, CJK filter, and manual setup step.
+  * Update plan/AGENT.md to include Git Hook validation in commit guidelines and task completion checklist.
+  * Update plan/GIT-GUIDE.md to introduce a dedicated section explaining hook checks and validation rules.
+
+[2026/07/16 v1.0.20260716.1] Implement YAML as Single Source of Truth specification template
+- todo_ref: 實作 YAML 唯一真理架構範本與轉換指南
+- commit: v1.0.20260716.1 Implement YAML as Single Source of Truth specification template
+- summary:
+  * Initiate Multi-Agent Council to debate and design the YAML-as-SSoT architecture.
+  * Add doc/yaml-truth-spec.md as the main specification and conversion template.
+  * Add doc/proposals/COUNCIL_DECISION_YAML.md to document the council decision and safety controls.
+  * Archive and clean up the temporary .council/ workspace files to logs/archived/council-archive.zip.
+
+[2026/07/28 v1.0.0] Refactor template to v2.0 Production Edition with Skill Library and Dual Versioning Strategy
+- todo_ref: null
+- commit: feat(template): upgrade template to v2.0 Production Edition with Skill Library and Dual Versioning
+- summary:
+  * 全面升級 AI 專案模板至 v2.0 Production Edition。
+  * 建立 skills/ 技能庫架構，將 Council 徹底 Skill 化 (skills/council/SKILL.md)。
+  * 實作雙軌版本模式 (SemVer 2.0 vs CalVer) 與 scripts/version_engine.py 策略模式引擎。
+  * 搬移 cold-history.log 至 plan/cold-history.log，讓 logs/ 恢復為純選用目錄。
+  * 綜觀全局復原 README.md (造車公司比喻、目錄決策樹、Option A/B 啟動、Agent 一指 Prompt)。
+  * 嚴格禁止專案內部使用 file:/// 絕對路徑，全面強制採用 Obsidian Wiki Link [[FileName]]。
+  * 升級 scripts/sync_project.py 與 scripts/git_hook_validator.py 靜態品質檢驗關卡。
+  * 實作兩階段 Bootstrapping、Single Writer Rule 與 Git Author 簽名檢查。

@@ -1,153 +1,148 @@
-# 通用專案結構模板 (General Project Template)
+# 通用 AI 專案結構模板 (AI Project Template - v2.0 Production Edition)
 
-本專案是一個**高通用性**的專案結構模板，適用於各種類型的專案開發（例如：軟體程式開發、文件編撰專案、資料蒐集整理、學術研究等）。
-
----
-
-## 💡 設計哲學 (Design Philosophy)
-
-本模板的核心設計基於「**漸進式揭露 (Progressive Disclosure)**」原則——確保閱讀者（不論是人或 AI Agent）在初始階段只接觸最精華的高階地圖，並在需要時才深入細節。
-
-三個必要核心目錄的分層正是此原則的具體實踐：
-
-| 層級 | 目錄 | 內容定位 | 載入時機 |
-| :--- | :--- | :--- | :--- |
-| **第一層：地圖** | `plan/` | 專案要做什麼（WHAT）、為什麼做（WHY） | 專案啟動時首先閱讀 |
-| **第二層：規格** | `doc/` | 具體怎麼做的細節規則（HOW in detail） | 處理特定功能時按需載入 |
-| **第三層：藍圖** | `structure/` | 物理模組關係圖與動態流程時序圖 | 需要理解全局架構時參考 |
-
-> [!WARNING]
-> **認知負載警告**：研究顯示，AI 大型語言模型在同時處理超過 150 條獨立指令時，準確率會急遽下降。因此，核心規範文件（如 `AGENT.md`、`TARGET.md`）建議將核心指令控制在 **80 條以內**，並將具體細節分散至 `doc/` 與 `structure/` 中按需載入，避免在單一文件中混入過多層次的資訊。
+本專案是一個**高通用性、高工程嚴謹度**的 AI 專案結構模板，適用於軟體開發、筆記資料整理、學術研究與自動化管線等各類專案。
 
 ---
 
-## 🏢 專案結構定位 (造車公司比喻)
+## 💡 核心設計哲學 (Design Philosophy)
 
-本專案的設計哲學遵循「造車公司」的職責分離（Separation of Concerns）原則，劃分為**必要核心**與**自由增減參考**目錄，確保專案的管理、規格、設計藍圖與成品各司其職：
+1. **兩階段漸進式啟動 (Progressive Disclosure - Two-Stage Bootstrap)**：
+   - **Stage 1 (熱載入)**：讀取 [[MEMORY]]（約 1.5k Token 滾動摘要與最近變更）。
+   - **Stage 2 (標籤掃描)**：輕量掃描 [[TARGET]] 的 Scope 與 [[AGENT]] 的 Guardrails 標籤區段，控制 Token 於極小範疇，杜絕失憶越界。
+2. **雙軌版本模式 (Dual Versioning Strategy)**：
+   - **SemVer 2.0 (`vMAJOR.MINOR.PATCH`)**：適用於程式碼、軟體成品、套件與技術研究專案 (配合 Conventional Commits 與 Gitflow)。
+   - **CalVer 日期導向 (`vYYYY.MM.DD` / `v1.0.YYYYMMDD.Z`)**：適用於個人筆記、每日日誌、資料整理專案。
+3. **單一寫入者原則 (Single Writer Rule)**：
+   - 開放 AI 主動調度 Sub-Agent，但 Sub-Agent 僅具備唯讀或 `.council/` 暫存寫入權限。所有全局狀態同步與 Log / Memory 寫入統一由 Parent Agent 單線執行，防範 Race Condition。
+4. **三維客觀 DoD 矩陣 (Three-Dimensional DoD Matrix)**：
+   - **Type C (代碼改動)**：強制 100% 單元測試綠燈通過。
+   - **Type A (純 Markdown/文檔)**：自動校驗檔案大小寫命名、內嵌 JSON/YAML/Mermaid 語法解析與 [[Obsidian Wiki Link]] 存在性。
+
+---
+
+## 🏢 專案結構與職責劃分 (造車公司比喻 Separation of Concerns)
+
+本專案的設計哲學遵循「造車公司」的職責分離 (Separation of Concerns) 原則，劃分為**必要核心**與**自由增減參考**目錄，確保專案的管理、規格、設計藍圖與成品各司其職：
 
 ### 1. 必要核心目錄 (Mandatory Cores)
 
-這三個目錄是理清專案脈絡與工作紀律的必要基礎：
+這四個目錄是理清專案脈絡、工作紀律與專業技能 SOP 的必要基礎：
 
-*   **[plan/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan)** (企業目標與管理層)
-    *   *職責*：定義核心目標、工作規範、開發進度與日常執行日誌。
-    *   *關鍵檔案*：
-        *   [TARGET.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/TARGET.md)：定義專案核心目標與邊界。
-        *   [AGENT.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/AGENT.md)：參與者（人/AI）工作與命名規範。
-        *   [PROCESS.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/PROCESS.md)：專案開發里程碑與待辦清單 (ToDo)。
-        *   [MEMORY.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/MEMORY.md)：每日執行歷史日誌與關鍵決策備忘。
-        *   [GIT-GUIDE.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/GIT-GUIDE.md)：Git 操作的非標準情境指引（階段式揭露，日常不需翻閱）。
-        *   [COUNCIL.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/COUNCIL.md)：多 Agent 討論議會與看板式交接規範（⚠️ *選用*，高額度/高難度任務時啟用）。
-        *   [FEEDBACK.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/plan/FEEDBACK.md)：專案經驗回饋紀錄（⚠️ *選用*，可視專案需求刪除）。
-*   **[doc/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc)** (產品/專案規格書)
-    *   *職責*：定義具體功能、邏輯、資料結構、檔案格式與配置規則的規格書。
-    *   *模板檔案*：
-        *   [functional-spec.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/functional-spec.md)：詳細的功能與演算法邏輯規格模板。
-        *   [data-schema.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/data-schema.md)：資料表、設定檔與快取格式規格模板。
-        *   [exclusion-rules.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/doc/exclusion-rules.md)：排除與過濾規則規格模板。
-*   **[structure/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/structure)** (工程藍圖/電路設計圖)
-    *   *職責*：定義物理模組的拆分關係與靜/動態流程圖。
-    *   *模板檔案*：
-        *   [modules.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/structure/modules.md)：物理檔案與職責地圖模板。
-        *   [diagram.md](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/structure/diagram.md)：靜態依賴圖與動態 Mermaid 時序圖/流程圖模板。
-
----
+| 目錄 | 職責定位 (造車公司比喻) | 關鍵檔案 |
+| :--- | :--- | :--- |
+| **[[plan/]]** | 企業目標與管理層（開工必讀入口） | [[TARGET]] (專案目標與邊界)<br>[[AGENT]] (工作與命名規範)<br>[[PROCESS]] (里程碑與待辦 ToDo)<br>[[MEMORY]] (熱記憶索引)<br>[[plan/cold-history.log]] (完整歷史日誌，Grep 代替 RAG)<br>[[GIT-GUIDE]] (Git 雙軌規範與發布指引) |
+| **[[doc/]]** | 產品與專案規格書（按需載入） | `functional-spec.md` (功能與邏輯規格)<br>`data-schema.md` (資料表與 Schema 規格)<br>`yaml-truth-spec.md` (YAML 唯一真理規格範本) |
+| **[[structure/]]** | 工程藍圖與電路設計圖 | `modules.md` (物理模組與職責地圖)<br>`diagram.md` (Mermaid 時序與動態流程圖) |
+| **[[skills/]]** | 技能庫與專業 SOP 車間（按需觸發與載入） | [[skills/README.md]] (Skill 庫規範說明)<br>[[skills/council/SKILL.md]] (多 Agent 議會討論 Skill) |
 
 ### 2. 自由增減參考目錄 (Optional / Reference Only)
 
-以下為本模板預先建立的基礎目錄範例，**您可以根據專案的具體性質自由增減或完全自訂本列表以外的任何目錄**：
+以下為本模板可選的基礎目錄，**您可以根據專案的具體性質自由增減或自訂**：
 
-*   **[source/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/source)** (最後造出來的成品車)
-    *   *職責*：放置最終產出的主檔案（例如：可執行程式原始碼、文件初稿、核心資料產出）。
-*   **[test/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/test)** (驗證可靠性的實驗室)
-    *   *職責*：放置單元測試、資料驗證腳本、Mock 程式或人工審查標準。
-*   **[scripts/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/scripts)** (輔助工具車間)
-    *   *職責*：放置一對多輔助腳本、資料爬蟲、臨時資料清洗/轉換工具。
-*   **[logs/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/logs)** (儀表板/黑盒子)
-    *   *職責*：放置系統運行日誌、排程報告、中間過程暫存檔。
-*   **[refer/](file:///C:/PersonalWS/AgentSandBox/AiProjectTemplate/refer)** (原料倉庫/背景資料)
-    *   *職責*：放置原始輸入資料（Raw Data）、客戶原始文件、參考文獻、法規標準。
+* **[[source/]]** (最後造出來的成品車)：放置最終產出的主檔案（例如：可執行程式原始碼、核心交付物）。
+* **[[test/]]** (驗證可靠性的實驗室)：放置單元測試、自動化驗證腳本或 Mock 程式。
+* **[[scripts/]]** (輔助工具車間)：放置一對多輔助腳本（`version_engine.py`, `bootstrap.py`, `sync_project.py`, `git_hook_validator.py`）。
+* **[[logs/]]** (儀表板與黑盒子)：選用目錄，放置系統運行階段日誌、排程報告與中間過程暫存檔（冷歷史日誌已劃歸 [[plan/cold-history.log]]）。
+* **[[refer/]]** (原料倉庫與背景資料)：放置原始輸入資料（Raw Data）、客戶原始文件與參考文獻。
 
 ---
 
-## 🚀 如何使用本模板啟動新專案 (Quick Start)
+## 🌿 專案目錄增減決策樹 (Directory Decision Tree)
 
-當您或您的 AI Agent 準備啟動一個新專案時，為避免盲目載入不必要的文件以及維護清晰的進度，我們提供以下兩種啟動路徑（推薦優先使用 **Option A 腳本啟動**以提高準確率並節省 Token）：
+為保持專案結構極簡並防範 Token 浪費，不應盲目建立所有選用目錄。請在初始化專案時核對以下 4 大決策問題，以決定是否建立各選用目錄（腳本啟動時可透過 `--modules` 參數指定，如 `--modules "source,test"`）：
 
-### 🌿 專案目錄增減決策樹 (Directory Decision Tree)
-
-為保持專案結構極簡並防範 Token 浪費，不應盲目建立所有選用目錄。請在初始化專案時核對以下問題，以決定是否建立各選用目錄（腳本啟動時可透過 `--modules` 參數指定，如 `--modules "source,test"`）：
-
-1.  **`source/` (程式原始碼與主成品)**
-    *   *決策問題*：「本專案的目標是否包含『編寫/建構實體程式碼、軟體成品、或核心交付物』？」
-    *   *若有* ➜ 啟用 `source/`。
-2.  **`test/` (測試與驗證實驗室)**
-    *   *決策問題*：「本專案是否包含需要被測試、跑自動化驗證、或進行資料校對的程式模組？」
-    *   *若有* ➜ 啟用 `test/`（若無可執行代碼則跳過）。
-3.  **`scripts/` (輔助小工具與腳本車間)**
-    *   *決策問題*：「我們是否需要編寫第三方資料爬蟲、臨時資料清洗/轉換小工具、或輔助部署的腳本？」
-    *   *若有* ➜ 啟用 `scripts/`。
-4.  **`refer/` (原料倉庫與背景資料)**
-    *   *決策問題*：「本專案是否包含大量外部原始資料、參考文獻、法規標準、或客戶提供的背景文件？」
-    *   *若有* ➜ 啟用 `refer/`。
+1. **`source/` (程式原始碼與主成品)**
+   - *決策問題*：「本專案的目標是否包含『編寫/建構實體程式碼、軟體成品、或核心交付物』？」
+   - *若有* ➜ 啟用 `source/`。
+2. **`test/` (測試與驗證實驗室)**
+   - *決策問題*：「本專案是否包含需要被測試、跑自動化驗證、或進行資料校對的程式模組？」
+   - *若有* ➜ 啟用 `test/`（若無可執行代碼則跳過）。
+3. **`scripts/` (輔助小工具與腳本車間)**
+   - *決策問題*：「我們是否需要編寫第三方資料爬蟲、臨時資料清洗/轉換小工具、或輔助部署的腳本？」
+   - *若有* ➜ 啟用 `scripts/`。
+4. **`refer/` (原料倉庫與背景資料)**
+   - *決策問題*：「本專案是否包含大量外部原始資料、參考文獻、法規標準、或客戶提供的背景資料？」
+   - *若有* ➜ 啟用 `refer/`。
 
 ---
 
-### 💡 Option A：腳本快速啟動 (推薦)
+## 🤖 如何在「Agent 層面」與「檔案層面」調用本範本 (Usage Guide)
 
-您可以直接調用範本內建的初始化腳本 `scripts/bootstrap.py`，一鍵自動化建立專案結構、解鎖文件並初始化 Git。
+使用本模板時，**使用者完全無需手動複製整包專案檔案**，可透過 AI Agent 一指 Prompt 指引或 CLI 工具腳本輕鬆建立新專案：
 
-**🛠️ 執行指令**（請將路徑與參數替換為您的真實屬性）：
+### 🤖 1. Agent 層面使用指引 (Agent-Driven Initialization)
+若您是在 IDE (如 Antigravity / Cursor / VSCode) 或對話環境中搭配 AI Agent 開發，您**只需向您環境中的 AI Agent 下達指令**，讓 Agent 讀取本範本並執行啟動：
+
+> **💬 Prompt 範例**：
+> 「請閱讀這個 AI 專案模板 `c:/PersonalWS/AgentSandBox/AiProjectTemplate`，並幫我在 `c:/PersonalWS/MyNewProject` 建立一個名為 `MyNewProject` 的新專案，版本策略採用 SemVer 2.0 (或 CalVer)。」
+
+#### 📁 運作原理 (File-Level Mechanism & Lifecycle)
+- **檔案複製與一次性裝配**：`bootstrap.py` 腳本執行時，會將本範本中的必要核心目錄 (`plan/`, `doc/`, `structure/`, `scripts/`, `skills/`) 與工具檔複製並渲染寫入至指定的「目標目錄」。
+- **獨立運作與範本純淨**：初始化完成後，目標目錄將成為一個包含獨立 `.git` 儲存庫與 Git Hooks 的完整專案。本範本儲存庫仍維持乾淨純潔，可隨時被重複調用或持續升級。
+- **選用目錄決策樹**：初始化時可透過 `--modules` 參數（例如 `--modules "source,test"`）按需建立選用目錄，防範無用目錄堆疊。
+
+---
+
+### 🚀 2. 啟動路徑 Option A vs Option B
+
+當您或您的 AI Agent 準備啟動一個新專案時，我們提供以下兩種啟動路徑（推薦優先使用 **Option A 腳本啟動**以提高準確率並節省 Token）：
+
+#### 💡 Option A：腳本快速啟動 (推薦)
+
+自行在 CLI 終端機調用，直接執行範本內建的初始化腳本 `scripts/bootstrap.py`：
+
 ```bash
-python scripts/bootstrap.py --target-dir <目標專案根目錄> --name "專案名稱" --agent "AI主要代理"
+python scripts/bootstrap.py --target-dir <目標目錄> --name "專案名稱" --version-strategy semver
 ```
-*   **非互動模式**：在沙盒或 CI/CD 無 TTY 環境下，腳本會自動以 `--non-interactive` 模式執行，自動填寫預設值。
-*   **Git 本地安全偵測**：腳本僅檢查目標目錄本身是否存在 `.git`。若不存在（即使父目錄有 Git 管控且忽略了本專案），仍會獨立初始化 Git 並自動進行首次零點 Commit（格式為 `v1.0.YYYYMMDD.1 Initialize project template`）。
+
+* **參數說明**：
+  - `--version-strategy` (`-v`)：可指定 `semver` (程式碼/軟體專案) 或 `calver` (筆記/日誌專案)。
+  - 於 TTY 互動模式下會顯示對話選單；於 `--non-interactive` 模式下會自動進行**啟發式自動推斷 (Smart Auto-Detection)** 檢測專案特徵檔案。
+  - 初始化過程會檢查並引導設定 Git `user.name` 與 `user.email` 作者簽名。
 
 ---
 
-### 📝 Option B：手動逐步啟動 (保留備份)
+#### 📝 Option B：手動解鎖啟動流程 (保留備份)
 
-如果您傾向於不依賴腳本，或在特殊環境下開發，可以完全保留原有的手動解鎖啟動流程：
+若您傾向於不依賴腳本，或在特殊環境下開發，可以完全保留原有的手動解鎖啟動流程：
 
-#### 1. 第一階段：複製地圖與核心規範 (建立 plan/ 與 `-template` 後綴)
+##### 1. 第一階段：複製地圖與核心規範 (建立 `plan/` 與 `-template` 後綴)
 ```powershell
 # 1. 於 {目標專案} 建立必要核心目錄
-mkdir <目標專案根目錄>/plan, <目標專案根目錄>/doc, <目標專案根目錄>/structure
+mkdir <目標專案根目錄>/plan, <目標專案根目錄>/doc, <目標專案根目錄>/structure, <目標專案根目錄>/skills
 
-# 2. 複製 {範本專案} 的 plan 核心檔案，並加上 -template 後綴
+# 2. 複製 {範本專案} 的 plan 核心檔案與 skills 技能庫，並加上 -template 後綴
 cp <範本專案根目錄>/plan/TARGET.md <目標專案根目錄>/plan/TARGET-template.md
 cp <範本專案根目錄>/plan/AGENT.md <目標專案根目錄>/plan/AGENT-template.md
 cp <範本專案根目錄>/plan/PROCESS.md <目標專案根目錄>/plan/PROCESS-template.md
-cp <範本專案根目錄>/plan/COUNCIL.md <目標專案根目錄>/plan/COUNCIL-template.md
 cp <範本專案根目錄>/plan/GIT-GUIDE.md <目標專案根目錄>/plan/GIT-GUIDE.md
 cp <範本專案根目錄>/plan/MEMORY.md <目標專案根目錄>/plan/MEMORY.md
+cp -r <範本專案根目錄>/skills/* <目標專案根目錄>/skills/
 ```
-*   **查核點**：Agent 暫停並與使用者對齊專案目標後，編輯並重命名解鎖：
-    ```powershell
-    mv <目標專案根目錄>/plan/TARGET-template.md <目標專案根目錄>/plan/TARGET.md
-    mv <目標專案根目錄>/plan/AGENT-template.md <目標專案根目錄>/plan/AGENT.md
-    mv <目標專案根目錄>/plan/PROCESS-template.md <目標專案根目錄>/plan/PROCESS.md
-    mv <目標專案根目錄>/plan/COUNCIL-template.md <目標專案根目錄>/plan/COUNCIL.md
-    ```
+* **查核點**：Agent 暫停並與使用者對齊專案目標後，編輯並重命名解鎖：
+  ```powershell
+  mv <目標專案根目錄>/plan/TARGET-template.md <目標專案根目錄>/plan/TARGET.md
+  mv <目標專案根目錄>/plan/AGENT-template.md <目標專案根目錄>/plan/AGENT.md
+  mv <目標專案根目錄>/plan/PROCESS.md <目標專案根目錄>/plan/PROCESS.md
+  ```
 
-#### 2. 第二階段：建立專案門面與規劃 (README.md & .gitignore)
+##### 2. 第二階段：建立專案門面與規劃 (README.md & .gitignore)
 ```powershell
 cp <範本專案根目錄>/README.md <目標專案根目錄>/README-template.md
 cp <範本專案根目錄>/.gitignore <目標專案根目錄>/.gitignore
 ```
-*   **查核點**：編輯 `README-template.md` 寫入專案簡介，並解鎖：
-    ```powershell
-    mv <目標專案根目錄>/README-template.md <目標專案根目錄>/README.md
-    ```
-*   **Git 初始化**：
-    ```powershell
-    git -C <目標專案根目錄> init
-    git -C <目標專案根目錄> add .
-    git -C <目標專案根目錄> commit -m "v1.0.YYYYMMDD.1 Initialize project structure and core guidelines"
-    ```
+* **查核點**：編輯 `README-template.md` 寫入專案簡介，並解鎖：
+  ```powershell
+  mv <目標專案根目錄>/README-template.md <目標專案根目錄>/README.md
+  ```
+* **Git 初始化與首次 Commit**：
+  ```powershell
+  git -C <目標專案根目錄> init
+  git -C <目標專案根目錄> add .
+  git -C <目標專案根目錄> commit -m "v1.0.YYYYMMDD.1 Initialize project structure and core guidelines"
+  ```
 
-#### 3. 第三階段：按需載入規格與藍圖
+##### 3. 第三階段：按需載入規格與藍圖
 ```powershell
 cp <範本專案根目錄>/doc/data-schema.md <目標專案根目錄>/doc/data-schema-template.md
 # 編輯完成後解鎖
@@ -155,43 +150,23 @@ mv <目標專案根目錄>/doc/data-schema-template.md <目標專案根目錄>/d
 ```
 
 > [!TIP]
-> **啟動完成後清理**：當專案成功初始化並解鎖啟用後，使用者或 Agent 可自行決定是否將本 README.md 中關於手動啟動的冗長指令說明刪除，僅保留專案介紹，以保持專案根目錄文件清爽。
+> **啟動完成後清理**：當專案成功初始化並解鎖啟用後，使用者或 Agent 可自行決定是否將本 README.md 中關於手動啟動的說明刪除，僅保留專案介紹，以保持專案根目錄文件清爽。
 
 ---
 
-## 🔄 進度與版本同步自動化 (DoD Sync Automation)
+## 🔄 進度與 DoD 同步自動化 (DoD Sync Automation)
 
-本專案模板內建了自動化同步腳本 `scripts/sync_project.py`，用於在任務完成時自動為 `plan/PROCESS.md` 待辦事項打勾，並推進版本號與更新熱記憶日誌。
+每次完成變更或寫入 `plan/cold-history.log` 後，在專案根目錄執行：
 
-### 1. 使用方式 (Usage)
-完成任務或日常變更後，在專案根目錄執行：
 ```bash
 python scripts/sync_project.py [--bump patch|minor|major]
 ```
 
-### 2. 核心規範 (Rules)
-*   **日誌格式**：同步前，必須確保 `logs/cold-history.log` 的最新一筆日誌中寫有 `todo_ref: 待辦項目名稱` (或與任務無關變更時寫 `todo_ref: null`) 以及 `commit: vX.Y.YYYYMMDD.Z Summary`。
-*   **版本號規格**：版本號強制遵循 `vX.Y.YYYYMMDD.Z` 規格，且必須作為對應 Git Commit 標題的前綴。
-    *   *Commit 範例*：`v1.0.20260701.1 Add database connection`
-*   **自我糾錯限制**：若同步腳本因格式不符拋出 `exit(1)`，Agent 最多執行 2 次自我糾錯重試，若仍失敗必須轉為 HITL 人工介入。
-
----
-
-## ⚓ Git Commit 驗證機制 (Git Commit Validation Hooks)
-
-本專案配置了 `pre-commit` 與 `commit-msg` git hooks，在 commit 時自動強制驗證專案狀態與 Commit 格式，避免非合規變更被提交。
-
-### 1. 驗證內容
-- **檔案一致性**：確保 `plan/PROCESS.md`、`logs/cold-history.log` 與 `.sync-state.json` 版號完全一致（即 commit 前有確實執行 `sync_project.py`）。
-- **Commit 標題**：必須以當前同步版號為前綴，格式為 `vX.Y.YYYYMMDD.Z English Summary`。
-- **語系限制**：Commit 訊息（標題與描述）強制使用英文（阻擋中日韓 CJK 字元及全形標點）。
-
-### 2. 安裝與部署
-若是新專案透過 `scripts/bootstrap.py` 初始化，Hooks 將自動啟用。若是手動 clone 本儲存庫，請在專案根目錄執行以下指令啟用 Hooks：
-```bash
-python scripts/install_hooks.py
-```
-
-### 3. 繞過檢查
-若需要提交臨時/未完成之 WIP 變更，可使用 `git commit -m "WIP" --no-verify` 繞過 Hook 驗證。
-
+### 核心功能與規範：
+1. **Type A 靜態品質關卡**：自動檢查 Markdown 中的 `file:///` 連結有效性、檔名大小寫與內嵌 JSON/YAML/Mermaid 語法解析。
+2. **自動推升版本**：依選定策略（SemVer 2.0 或 CalVer）自動計算下一版號。
+3. **自動打勾 ToDo**：比對 log 中的 `todo_ref` 自動打勾 `plan/PROCESS.md`。
+4. **自動更新熱記憶**：將變更索引回寫至 `plan/MEMORY.md`。
+5. **Git Commit 語意規範**：
+   - **Header 強制規範**：嚴格符合 Conventional Commits 正則 (`type(scope): summary`) 或 CalVer 前綴 (`vX.Y.YYYYMMDD.Z summary`)。
+   - **Body 不限制 / 允許使用中文說明 (Permitted CJK, not forced)**：方便詳細說明變更脈絡與設計理據。

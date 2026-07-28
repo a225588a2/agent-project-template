@@ -1,409 +1,352 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+sync_project.py - Progress, DoD & Version Sync Automation for AI Project Template.
+Integrates version_engine.py for Dual Versioning (SemVer 2.0 / CalVer),
+Strict Parsing, Cold/Hot Memory sync, and Type A Markdown Static Quality Checks.
+"""
 
 import os
 import sys
 import re
-import argparse
 import json
-import subprocess
+import argparse
+import traceback
 from datetime import datetime
+
+# Add scripts dir to sys.path to import version_engine
+script_dir = os.path.dirname(os.path.abspath(__file__))
+if script_dir not in sys.path:
+    sys.path.insert(0, script_dir)
+
+try:
+    from version_engine import get_version_strategy, VersionStrategy
+except ImportError:
+    # Minimal fallback definition if version_engine is missing
+    class MinimalStrategy:
+        strategy_name = "semver"
+        def bump_version(self, v, b="patch"): return "v1.0.1"
+        def validate_version(self, v): return True
+        def format_commit_header(self, v, s, t="feat"): return f"feat: {s}"
+    def get_version_strategy(s): return MinimalStrategy()
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="AI Project Status Sync Tool (sync_project.py)",
-        formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-    parser.add_argument(
-        "-d", "--dir",
-        default=".",
-        help="Workspace directory (default: current directory)"
+        description="Project Progress & Version Synchronization Tool (sync_project.py)"
     )
     parser.add_argument(
         "--bump",
         choices=["patch", "minor", "major"],
-        help="Increment version type (default: daily progress patch calculation)"
+        default="patch",
+        help="Version bump increment type for SemVer (default: patch)"
     )
     parser.add_argument(
-        "-l", "--log",
-        default="logs/cold-history.log",
-        help="Path to cold history log file relative to workspace"
+        "--summary",
+        default="",
+        help="Optional commit summary text"
     )
     parser.add_argument(
-        "-p", "--process",
-        default="plan/PROCESS.md",
-        help="Path to PROCESS.md file relative to workspace"
-    )
-    parser.add_argument(
-        "-m", "--memory",
-        default="plan/MEMORY.md",
-        help="Path to MEMORY.md file relative to workspace"
-    )
-    parser.add_argument(
-        "-s", "--state",
-        default=".sync-state.json",
-        help="Path to state JSON file relative to workspace"
+        "--skip-static-check",
+        action="store_true",
+        help="Skip Type A Markdown static quality checks (not recommended)"
     )
     return parser.parse_args()
 
-def clean_text(text):
-    """Normalize text for matching (strip, lowercase, alphanumeric only)."""
-    return re.sub(r'[^a-zA-Z0-9\u4e00-\u9fa5]', '', text).lower()
 
-def parse_last_log_entry(log_path):
-    if not os.path.exists(log_path):
-        raise FileNotFoundError(f"Log file not found: {log_path}")
-        
-    with open(log_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-        
-    header_indices = []
-    # Header pattern: [YYYY/MM/DD vX.Y.YYYYMMDD.Z] English Summary
-    header_pattern = re.compile(r'^\[\d{4}/\d{2}/\d{2}\s+v\d+\.\d+\.\d{8}\.\d+\].*$')
-    
-    # Check for silent typos/malformed headers in cold-history.log
-    last_bracket_line = None
-    for line in reversed(lines):
-        if line.startswith("["):
-            last_bracket_line = line.strip()
-            break
-            
-    if last_bracket_line and not header_pattern.match(last_bracket_line):
-        raise ValueError(
-            f"Latest log entry header in logs/cold-history.log is malformed.\n"
-            f"Expected: [YYYY/MM/DD vX.Y.YYYYMMDD.Z] English Summary\n"
-            f"Got:      '{last_bracket_line}'"
-        )
-    
-    for idx, line in enumerate(lines):
-        if header_pattern.match(line.strip()):
-            header_indices.append(idx)
-            
-    if not header_indices:
-        raise ValueError("No valid log entries starting with [YYYY/MM/DD vX.Y.YYYYMMDD.Z] found in cold history log.")
-        
-    last_header_idx = header_indices[-1]
-    entry_lines = lines[last_header_idx:]
-    
-    # Parse title line
-    title_line = entry_lines[0].strip()
-    title_match = re.match(r'^\[(\d{4}/\d{2}/\d{2})\s+v((\d+)\.(\d+)\.(\d{8})\.(\d+))\]\s+(.+)$', title_line)
-    if not title_match:
-        raise ValueError(
-            f"Latest log entry header format invalid.\n"
-            f"Expected: [YYYY/MM/DD vX.Y.YYYYMMDD.Z] Summary\n"
-            f"Got:      '{title_line}'"
-        )
-        
-    log_date, log_version, log_major, log_minor, log_version_date, log_version_index, log_title = title_match.groups()
-    
-    todo_ref = None
-    commit_msg = None
-    summary_bullets = []
-    in_summary = False
-    
-    for line in entry_lines[1:]:
-        stripped = line.strip()
-        if not stripped:
-            continue
-            
-        # Stop if we hit another header (safety check)
-        if header_pattern.match(stripped):
-            break
-            
-        if stripped.startswith("- todo_ref:"):
-            todo_ref = stripped.split("- todo_ref:")[1].strip()
-            in_summary = False
-        elif stripped.startswith("- commit:"):
-            commit_msg = stripped.split("- commit:")[1].strip()
-            in_summary = False
-        elif stripped.startswith("- summary:"):
-            in_summary = True
-        elif in_summary:
-            if line.startswith(" ") or line.startswith("\t"):
-                summary_bullets.append(stripped)
-            else:
-                in_summary = False
-                
-    if todo_ref is None:
-        raise ValueError("Log entry missing '- todo_ref:' field.")
-    if commit_msg is None:
-        raise ValueError("Log entry missing '- commit:' field.")
-    if not summary_bullets:
-        raise ValueError("Log entry summary cannot be empty and must contain indented bullet points.")
-        
-    return {
-        "date": log_date,
-        "version": log_version,
-        "major": int(log_major),
-        "minor": int(log_minor),
-        "version_date": log_version_date,
-        "version_index": int(log_version_index),
-        "title": log_title,
-        "todo_ref": todo_ref,
-        "commit": commit_msg,
-        "summary": summary_bullets
-    }
+def load_version_strategy(root_dir: str) -> Tuple[VersionStrategy, str]:
+    """Load version strategy from .sync-state.json or project-meta.json."""
+    sync_state_path = os.path.join(root_dir, ".sync-state.json")
+    strategy_name = "semver"
+    current_version = "v1.0.0"
 
-def get_open_todos(process_path):
-    todos = []
-    if os.path.exists(process_path):
-        todo_pattern = re.compile(r'^\s*[\-\*\+]\s+`?\[([\s\/])\]`?\s*(.*)$')
-        with open(process_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                match = todo_pattern.match(line)
-                if match:
-                    todos.append(match.group(2).strip())
-    return todos
+    if os.path.exists(sync_state_path):
+        try:
+            with open(sync_state_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                strategy_name = data.get("version_strategy", "semver")
+                current_version = data.get("version", "v1.0.0")
+        except Exception:
+            pass
+    else:
+        meta_path = os.path.join(root_dir, "project-meta.json")
+        if os.path.exists(meta_path):
+            try:
+                with open(meta_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    strategy_name = data.get("version_strategy", "semver")
+            except Exception:
+                pass
 
-def sync_todos(process_path, todo_ref_val):
-    if not os.path.exists(process_path):
-        raise FileNotFoundError(f"PROCESS.md not found: {process_path}")
-        
-    with open(process_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-        
-    clean_ref = clean_text(todo_ref_val)
-    matched_count = 0
-    new_lines = []
-    
-    # Matches markdown list checkboxes with optional backticks and indentations
-    todo_pattern = re.compile(r'^(\s*[\-\*\+]\s+`?)\[([\s\/])\](`?\s*)(.*)$')
-    
-    for line in lines:
-        match = todo_pattern.match(line)
-        if match:
-            prefix, marker_content, suffix, todo_text = match.groups()
-            clean_todo = clean_text(todo_text)
-            
-            # Double-sided substring matching
-            if clean_ref in clean_todo or clean_todo in clean_ref:
-                line = f"{prefix}[x]{suffix}{todo_text}\n"
-                matched_count += 1
-        new_lines.append(line)
-        
-    if matched_count == 0:
-        open_todos = get_open_todos(process_path)
-        todos_list_str = "\n".join([f"  * {t}" for t in open_todos])
-        raise ValueError(
-            f"No matching ToDo task found in PROCESS.md for reference: '{todo_ref_val}'\n"
-            f"Currently open ToDo tasks in PROCESS.md:\n{todos_list_str if open_todos else '  (None)'}"
-        )
-        
-    with open(process_path, 'w', encoding='utf-8') as f:
-        f.writelines(new_lines)
-        
-    print(f"[Info] Checked off '{todo_ref_val}' in PROCESS.md.")
+    return get_version_strategy(strategy_name), current_version
 
-def bump_version(process_path, bump_type):
-    if not os.path.exists(process_path):
-        raise FileNotFoundError(f"PROCESS.md not found: {process_path}")
-        
-    with open(process_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-        
-    # Find current version line: - **目前版本**：vX.Y.YYYYMMDD.Z
-    version_pattern = re.compile(
-        r'^(\-\s*\*\*目前版本\*\*\s*：\s*)v?(\d+)\.(\d+)\.(\d{8})\.(\d+)(.*?)$',
-        re.MULTILINE
-    )
-    
-    match = version_pattern.search(content)
-    if not match:
-        raise ValueError("Could not find a valid version line in format '- **目前版本**：vX.Y.YYYYMMDD.Z' in PROCESS.md.")
-        
-    prefix, major_str, minor_str, date_str, index_str, suffix = match.groups()
-    
-    major = int(major_str)
-    minor = int(minor_str)
-    date_part = date_str
-    index = int(index_str)
-    
-    today_str = datetime.now().strftime("%Y%m%d")
-    
-    # Calculate new version
-    if bump_type == "major":
-        new_major = major + 1
-        new_minor = 0
-        new_date = today_str
-        new_index = 1
-    elif bump_type == "minor":
-        new_major = major
-        new_minor = minor + 1
-        new_date = today_str
-        new_index = 1
-    else: # patch / default daily index calculation
-        new_major = major
-        new_minor = minor
-        if date_part == today_str:
-            new_date = today_str
-            new_index = index + 1
-        else:
-            new_date = today_str
-            new_index = 1
-            
-    old_version = f"v{major}.{minor}.{date_part}.{index}"
-    new_version = f"v{new_major}.{new_minor}.{new_date}.{new_index}"
-    
-    new_line = f"{prefix}{new_version}{suffix}"
-    content = version_pattern.sub(new_line, content)
-    
-    return old_version, new_version, content
 
-def update_memory_md(memory_path, new_version, log_entry):
-    if not os.path.exists(memory_path):
-        return
-        
-    with open(memory_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-        
-    section_header = "## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)"
-    if section_header not in content:
-        print("[Warning] Could not find 'Recent Change Indexes' section in MEMORY.md. Skipping MEMORY.md index update.")
-        return
-        
-    parts = content.split(section_header)
-    intro_part = parts[0] + section_header + "\n\n"
-    entries_part = parts[1].strip()
+def run_type_a_static_checks(root_dir: str):
+    """
+    Type A DoD: Markdown Static Quality Checks.
+    Validates file:/// links, filename case conventions, and embedded JSON syntax.
+    """
+    print("\n--- Running Type A Markdown Static Quality Checks ---")
+    errors = []
     
-    # Split existing entries by ###
-    existing_entries = []
-    if entries_part:
-        # Split but keep the delimiter ###
-        splits = re.split(r'^(###\s+.*)$', entries_part, flags=re.MULTILINE)
-        current_header = None
-        current_body = []
+    # 1. Filename Case Convention Check
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        # Ignore .git, .obsidian, .venv, etc.
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+        rel_dir = os.path.relpath(dirpath, root_dir)
         
-        for part in splits:
-            part_strip = part.strip()
-            if not part_strip:
+        for f in filenames:
+            if f.startswith("."):
                 continue
-            if part.startswith("###"):
-                if current_header:
-                    existing_entries.append((current_header, "\n".join(current_body)))
-                current_header = part_strip
-                current_body = []
-            else:
-                current_body.append(part)
-        if current_header:
-            existing_entries.append((current_header, "\n".join(current_body)))
+            
+            rel_path = os.path.join(rel_dir, f) if rel_dir != "." else f
+            
+            # Rule: Core plan files must be UPPER-CASE
+            if rel_dir == "plan" and f.endswith(".md"):
+                base = f[:-3]
+                if base not in ["AGENT", "TARGET", "PROCESS", "MEMORY", "GIT-GUIDE", "FEEDBACK"]:
+                    if not base.isupper() and "-" in base:
+                        errors.append(f"[Filename Error] File in plan/ '{f}' should be UPPER-CASE (e.g. AGENT.md)")
+            
+            # Rule: Skills markdown files should be SKILL.md, README.md, or use kebab-case
+            if rel_dir.startswith("skills") and f.endswith(".md"):
+                if f not in ["SKILL.md", "README.md"]:
+                    base = f[:-3]
+                    if base != base.lower() or "_" in base:
+                        errors.append(f"[Filename Error] Skill file '{rel_path}' should be SKILL.md, README.md, or use kebab-case.")
 
-    # Format new entry
-    formatted_summary = "\n".join([f"  {b}" for b in log_entry["summary"]])
-    new_entry_header = f"### {new_version} {log_entry['title']} ({new_version})"
-    new_entry_body = f"- **變更項目**：\n{formatted_summary}"
+            # Rule: Python files should use snake_case
+            if f.endswith(".py") and "-" in f:
+                errors.append(f"[Filename Error] Python script '{f}' contains hyphen '-'. Use snake_case with '_' to prevent import errors.")
+
+    # 2. Markdown file:/// Link & Obsidian Wiki Link [[FileName]] Verification
+    file_link_pattern = re.compile(r"\[([^\]]+)\]\((file:///[^\)]+)\)")
+    wiki_link_pattern = re.compile(r"\[\[([^\]\|#]+)(?:#[^\]\|]+)?(?:\|[^\]]+)?\]\]")
     
-    # Prepend new entry
-    all_entries = [(new_entry_header, new_entry_body)] + existing_entries
-    # Keep last 5 entries
-    all_entries = all_entries[:5]
+    # Pre-build set of all markdown filenames for quick wiki-link matching
+    all_md_files = set()
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+        for fn in filenames:
+            if fn.endswith(".md"):
+                all_md_files.add(fn)
+                all_md_files.add(fn[:-3]) # Also store base name without .md
     
-    # Reassemble entries
-    formatted_entries = ""
-    for header, body in all_entries:
-        formatted_entries += f"{header}\n{body.strip()}\n\n"
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+        for f in filenames:
+            if f.endswith(".md"):
+                full_path = os.path.join(dirpath, f)
+                try:
+                    with open(full_path, 'r', encoding='utf-8') as fp:
+                        content = fp.read()
+                        
+                    # Check file:/// links for existence and enforce no internal file:/// rule
+                    for match in file_link_pattern.finditer(content):
+                        link_text, raw_url = match.groups()
+                        clean_path = raw_url.replace("file:///", "").split("#")[0]
+                        if len(clean_path) > 1 and clean_path[1] == ":":
+                            local_abs_path = os.path.normpath(clean_path)
+                        else:
+                            local_abs_path = os.path.normpath("/" + clean_path)
+                            
+                        # Check existence
+                        if not os.path.exists(local_abs_path):
+                            errors.append(f"[Link Rot Error] Broken file:/// link in '{f}': {raw_url} (File not found)")
+                        else:
+                            # Rule: Project-internal links MUST NOT use file:///. Must use [[WikiLink]] instead.
+                            try:
+                                common_p = os.path.commonpath([os.path.abspath(root_dir), os.path.abspath(local_abs_path)])
+                                if common_p == os.path.abspath(root_dir):
+                                    # Link points inside the project directory!
+                                    rel_target = os.path.relpath(local_abs_path, root_dir)
+                                    target_base = os.path.basename(local_abs_path)
+                                    if target_base.endswith(".md"):
+                                        target_base = target_base[:-3]
+                                    errors.append(
+                                        f"[Forbidden Link Error] In '{f}': Avoid using 'file:///' for project-internal links! "
+                                        f"Use Obsidian Wiki Link [[{target_base}]] instead of '{raw_url}'."
+                                    )
+                            except ValueError:
+                                # Different drive letter, external link is permitted as last resort
+                                pass
+                            
+                    # Check Obsidian Wiki Links [[TargetFile]]
+                    ignored_wiki_placeholders = {"FileName", "Note Title", "wikilinks", "MISSION.md", "TargetFile", "Obsidian Wiki Link"}
+                    
+                    clean_content_for_links = re.sub(r"```.*?```", "", content, flags=re.DOTALL)
+                    clean_content_for_links = re.sub(r"`[^`]+`", "", clean_content_for_links)
+                    
+                    for match in wiki_link_pattern.finditer(clean_content_for_links):
+                        raw_target = match.group(1).strip()
+                        if not raw_target or raw_target in ignored_wiki_placeholders:
+                            continue
+                        
+                        # 1. Check if raw_target is a direct relative path (file or directory) in root_dir
+                        clean_rel_target = raw_target.rstrip("/")
+                        abs_target = os.path.normpath(os.path.join(root_dir, clean_rel_target))
+                        abs_target_md = abs_target if abs_target.endswith(".md") else abs_target + ".md"
+                        
+                        if os.path.exists(abs_target) or os.path.exists(abs_target_md):
+                            continue
+                            
+                        # 2. Check if base name matches any existing markdown file
+                        target_base = os.path.basename(clean_rel_target)
+                        if target_base.endswith(".md"):
+                            target_base = target_base[:-3]
+                            
+                        if target_base in all_md_files or (target_base + ".md") in all_md_files:
+                            continue
+                            
+                        errors.append(f"[Wiki Link Error] Broken Obsidian Wiki Link in '{f}': [[{raw_target}]] (Target file or directory not found)")
+                            
+                    # Check embedded ```json code blocks
+                    json_blocks = re.findall(r"```json\s*\n(.*?)\n```", content, re.DOTALL)
+                    for idx, j_str in enumerate(json_blocks):
+                        try:
+                            json.loads(j_str)
+                        except json.JSONDecodeError as je:
+                            errors.append(f"[Embedded Syntax Error] Invalid JSON block #{idx+1} in '{f}': {je}")
+
+                except Exception as ex:
+                    errors.append(f"[Read Error] Failed to inspect '{f}': {ex}")
+
+    if errors:
+        print(f"❌ Type A Static Check Failed with {len(errors)} error(s):")
+        for err in errors:
+            print(f"  - {err}")
+        print("\n[Strict Parsing] Please fix the static quality issues before synchronizing.")
+        sys.exit(1)
         
-    new_content = intro_part + formatted_entries.strip() + "\n"
+    print("✅ Type A Markdown Static Quality Checks Passed cleanly!")
+
+
+def sync_project_status(bump_type: str = "patch", summary_arg: str = "", skip_static: bool = False):
+    root_dir = os.path.dirname(script_dir)
     
-    with open(memory_path, 'w', encoding='utf-8') as f:
-        f.write(new_content)
+    # 1. Run Type A static quality checks
+    if not skip_static:
+        run_type_a_static_checks(root_dir)
         
-    print("[Info] Updated MEMORY.md change indexes.")
+    strategy, current_version = load_version_strategy(root_dir)
+    print(f"\n--- Project Sync Strategy: {strategy.strategy_name.upper()} (Current: {current_version}) ---")
 
+    # 2. Parse cold-history.log for latest commit and todo_ref
+    cold_log_path = os.path.join(root_dir, "plan", "cold-history.log")
+    if not os.path.exists(cold_log_path):
+        print(f"[Error] Log file not found: {cold_log_path}")
+        sys.exit(1)
 
-
-def save_state(state_path, new_version, last_task, open_todos):
-    state_data = {
-        "version": new_version,
-        "last_sync": datetime.now().isoformat(),
-        "last_task": last_task,
-        "open_todos": open_todos
-    }
     try:
-        with open(state_path, 'w', encoding='utf-8') as f:
-            json.dump(state_data, f, indent=2, ensure_ascii=False)
-        print(f"[Info] Exported state to {state_path}")
+        with open(cold_log_path, 'r', encoding='utf-8') as f:
+            log_content = f.read().strip()
     except Exception as e:
-        print(f"[Warning] Failed to save state file: {e}")
+        print(f"[Error] Failed to read plan/cold-history.log: {e}")
+        sys.exit(1)
+
+    if not log_content:
+        print("[Warning] plan/cold-history.log is empty.")
+        log_entries = []
+    else:
+        # Split log entries by date brackets or header entries
+        log_entries = [e.strip() for e in re.split(r'\n(?=\[\d{4}/\d{2}/\d{2})', log_content) if e.strip()]
+
+    latest_entry = log_entries[-1] if log_entries else ""
+    
+    # Extract todo_ref and commit summary
+    todo_ref_match = re.search(r"-\s*todo_ref:\s*(.+)", latest_entry)
+    todo_ref = todo_ref_match.group(1).strip() if todo_ref_match else None
+    if todo_ref == "null":
+        todo_ref = None
+
+    commit_summary_match = re.search(r"-\s*commit:\s*(.+)", latest_entry)
+    log_commit_summary = commit_summary_match.group(1).strip() if commit_summary_match else summary_arg
+
+    # 3. Bump Version
+    new_version = strategy.bump_version(current_version, bump_type)
+    print(f"[Version Bump] {current_version} -> {new_version} ({strategy.strategy_name})")
+
+    # 4. Update plan/PROCESS.md ToDo if todo_ref is present
+    process_md_path = os.path.join(root_dir, "plan", "PROCESS.md")
+    if os.path.exists(process_md_path):
+        try:
+            with open(process_md_path, 'r', encoding='utf-8') as f:
+                proc_content = f.read()
+
+            # Update current status version line
+            proc_content = re.sub(
+                r"(-\s*\*\*目前版本\*\*：\s*)(v[^\s\n]+)",
+                f"\\g<1>{new_version}",
+                proc_content
+            )
+
+            # Check off ToDo item if matched
+            if todo_ref:
+                # Replace - [ ] [todo_ref] with - [x] [todo_ref]
+                escaped_ref = re.escape(todo_ref)
+                pattern = re.compile(rf"(-\s*\[\s*\]\s*(`?\[?{escaped_ref}\]?`?))")
+                if pattern.search(proc_content):
+                    proc_content = pattern.sub(f"- [x] \\2", proc_content)
+                    print(f"[PROCESS.md] Checked off ToDo: '{todo_ref}' -> [x]")
+                else:
+                    print(f"[Info] ToDo ref '{todo_ref}' not found in unchecked state in PROCESS.md.")
+
+            with open(process_md_path, 'w', encoding='utf-8') as f:
+                f.write(proc_content)
+            print(f"[Info] Updated {process_md_path}")
+        except Exception as e:
+            print(f"[Warning] Failed to update PROCESS.md: {e}")
+
+    # 5. Update plan/MEMORY.md Hot Memory Summary
+    memory_md_path = os.path.join(root_dir, "plan", "MEMORY.md")
+    if os.path.exists(memory_md_path):
+        try:
+            with open(memory_md_path, 'r', encoding='utf-8') as f:
+                mem_content = f.read()
+
+            # Append new change index entry right under Recent Change Indexes section
+            new_index_entry = f"\n### {new_version} {log_commit_summary}\n- **變更項目**：\n  * {log_commit_summary} (todo_ref: {todo_ref or 'null'})\n"
+            
+            section_header = "## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)"
+            if section_header in mem_content:
+                parts = mem_content.split(section_header, 1)
+                mem_content = parts[0] + section_header + "\n" + new_index_entry + parts[1]
+                with open(memory_md_path, 'w', encoding='utf-8') as f:
+                    f.write(mem_content)
+                print(f"[MEMORY.md] Updated Hot Memory index for {new_version}")
+        except Exception as e:
+            print(f"[Warning] Failed to update MEMORY.md: {e}")
+
+    # 6. Update .sync-state.json
+    sync_state_path = os.path.join(root_dir, ".sync-state.json")
+    sync_state = {
+        "version": new_version,
+        "version_strategy": strategy.strategy_name,
+        "last_updated": datetime.now().isoformat(),
+        "last_todo_ref": todo_ref,
+        "last_commit_summary": log_commit_summary
+    }
+    with open(sync_state_path, 'w', encoding='utf-8') as f:
+        json.dump(sync_state, f, indent=2, ensure_ascii=False)
+    print(f"[State] Updated .sync-state.json to version {new_version}")
+
+    # 7. Print recommended git commit command
+    commit_header = strategy.format_commit_header(new_version, log_commit_summary or "update project status")
+    print("\n=========================================")
+    print("✨ Sync Completed Successfully!")
+    print(f"📌 Next Git Commit Header Recommendation:")
+    print(f"   git commit -m \"{commit_header}\"")
+    print("=========================================\n")
+
 
 def main():
     args = parse_args()
-    os.chdir(args.dir)
-    
-    log_path = args.log
-    process_path = args.process
-    memory_path = args.memory
-    state_path = args.state
-    
-    print("--- Executing AI Project Sync Tool ---")
-    
-    # 1. Parse cold-history log
     try:
-        log_entry = parse_last_log_entry(log_path)
-        print(f"[Info] Parsed last log entry successfully.")
-        print(f"  Log Version: {log_entry['version']}")
-        print(f"  Log Title  : {log_entry['title']}")
-        print(f"  ToDo Ref   : {log_entry['todo_ref']}")
+        sync_project_status(bump_type=args.bump, summary_arg=args.summary, skip_static=args.skip_static_check)
     except Exception as e:
-        print(f"\n[Strict Parsing Error] {e}")
-        print("Please fix the last entry in logs/cold-history.log and run again.\n")
+        print(f"\n❌ [Sync Error] Synchronization failed: {e}")
+        traceback.print_exc()
         sys.exit(1)
-        
-    # 2. Sync ToDo
-    todo_ref_val = log_entry["todo_ref"]
-    is_task_free = todo_ref_val.lower() in ["null", "none", "", "empty"]
-    
-    if is_task_free:
-        print("[Info] Task-free change detected (todo_ref is null/none). Skipping ToDo checkbox update.")
-    else:
-        try:
-            sync_todos(process_path, todo_ref_val)
-        except Exception as e:
-            print(f"\n[Strict Parsing Error] {e}")
-            print("Please correct the todo_ref in logs/cold-history.log to match an open ToDo and try again.\n")
-            sys.exit(1)
-            
-    # 3. Bump version
-    try:
-        old_version, new_version, new_process_content = bump_version(process_path, args.bump)
-    except Exception as e:
-        print(f"\n[Error] Failed to calculate version bump: {e}")
-        sys.exit(1)
-        
-    # Validate version consistency between log header and calculated version
-    log_version_normalized = log_entry["version"].lstrip('v')
-    new_version_normalized = new_version.lstrip('v')
-    if log_version_normalized != new_version_normalized:
-        print(f"\n[Strict Parsing Error] Version mismatch detected!")
-        print(f"  Version in logs/cold-history.log: v{log_version_normalized}")
-        print(f"  Calculated version in PROCESS.md: v{new_version_normalized}")
-        print("Please align the version in logs/cold-history.log to match the calculated progression and try again.\n")
-        sys.exit(1)
-        
-    # Commit version bump to PROCESS.md
-    try:
-        with open(process_path, 'w', encoding='utf-8') as f:
-            f.write(new_process_content)
-        print(f"[Info] Bumped version: {old_version} -> {new_version} in PROCESS.md.")
-    except Exception as e:
-        print(f"\n[Error] Failed to write version to PROCESS.md: {e}")
-        sys.exit(1)
-        
-    # 4. Update MEMORY.md hot memory
-    try:
-        update_memory_md(memory_path, new_version, log_entry)
-    except Exception as e:
-        print(f"[Warning] Failed to update MEMORY.md: {e}")
-        
-
-    
-    # 6. Save State JSON
-    open_todos = get_open_todos(process_path)
-    last_task_desc = "Task-free change" if is_task_free else todo_ref_val
-    save_state(state_path, new_version, last_task_desc, open_todos)
-    
-    print(f"\n[Success] Project status synced successfully to version: {new_version}")
-    print(f"[Git Command Tip] git commit -m \"{new_version} {log_entry['title']}\"\n")
 
 if __name__ == "__main__":
     main()

@@ -6,61 +6,46 @@
 
 ## 目前狀態 (Current Status)
 
-- **當前進度**：`[階段 1（核心基礎實作）進行中，已完成對上次結論的評估提案，並二次優化 COUNCIL.md 流程與角色]`
-- **目前版本**：v1.0.20260716.1
+- **當前進度**：[階段 1 完成，成功升級 AI 專案模板至 v2.0 Production Edition，全面導入雙軌版本模式與三維 DoD 檢驗關卡]
+- **目前版本**：v1.0.0
 
 ---
 
 ## 已完成的里程碑 (Completed Milestones)
 
-> [說明：請在此列出專案已經完成的重要里程碑，按時間順序由舊到新排列]
-
 - [x] 建立通用專案骨架與必要核心目錄 (`plan/`, `doc/`, `structure/`)。
-- [x] 建立並確認第一版工作規範 `plan/AGENT.md` 與目標定義 `plan/TARGET.md`。
-- [x] 建立並導入多 Agent 討論議會與協作規範 `plan/COUNCIL.md`，並整合至工作流。
-- [x] 完成對上次結論的評估提案，並二次優化 COUNCIL.md 流程、雙軌記憶物理分離與安全隔離防線。
+- [x] 建立並導入多 Agent 討論議會與協作規範 [[skills/council/SKILL.md]]。
+- [x] 實作 `scripts/version_engine.py` 策略模式版本引擎。
+- [x] 實作 `scripts/bootstrap.py` 雙軌版本策略選擇、非互動智慧推斷 (Smart Auto-Detection) 與 Git Author 簽名檢查。
+- [x] 升級 `plan/AGENT.md` 實施兩階段漸進式啟動、單一寫入者原則 (Single Writer Rule) 與三維 DoD 矩陣。
+- [x] 升級 `scripts/sync_project.py` 與 `scripts/git_hook_validator.py` 支援 Type A Markdown 靜態 quality checks 與 Conventional Commits (Body 許中文)。
+- [x] 完成 Skill 庫架構建立與 Council Skill 化重構 ([[skills/council/SKILL.md]])。
 
 ---
 
 ## 分階段開發計畫與待辦項目 (Development Plan & ToDo List)
-
-> [說明：建議將專案劃分為多個 MVP（最小可行性產品）階段，以利迭代。每個階段應有明確的目標與待辦事項]
 
 ### 階段 0：結構定義與環境搭建 ✅ 完成
 - [x] 初始化專案目錄與設定 `.gitignore`。
 - [x] 定義工作規範 `AGENT.md`。
 - [x] 定義系統/專案目標 `TARGET.md`。
 
-### 階段 1：核心基礎實作 🚀 進行中
-- [x] `[實作 YAML 唯一真理架構範本與轉換指南]`
-- [/] `[待辦項目一：例如，實作資料庫連線與資料表 DDL]`
-- [ ] `[待辦項目二：例如，撰寫核心資料抓取腳本]`
-- [ ] `[待辦項目三：例如，針對基礎類別進行單元測試]`
+### 階段 1：核心基礎實作與模板 v2.0 升級 ✅ 完成
+- [x] 實作雙軌版本模式 (SemVer 2.0 vs CalVer)。
+- [x] 實作 Type A Markdown 靜態品質關卡檢驗。
+- [x] 導入 Git Author Signature 初始化設定流程。
 
-### 階段 2：延伸功能與邏輯串接
-- [ ] `[待辦項目一：例如，加入資料過濾與排重演算法]`
-- [ ] `[待辦項目二：例如，串接外部 API 或生成分析報告]`
-
-### 階段 3：整合驗證與優化
-- [ ] `[待辦項目一：例如，進行邊界條件測試與性能調優]`
-- [ ] `[待辦項目二：例如，優化文字輸出與視覺化排版]`
+### 階段 2：延伸功能與範例補充 🚀 進行中
+- [ ] `[建立擴充模組之自動化單元測試範例]`
+- [ ] `[補充多語言介面與國際化說明範本]`
 
 ---
 
 ## 未來優化與待辦項目 (Backlog / Future ToDo)
 
-> [說明：非當前階段必須完成、但對專案未來有價值的中長期計畫、Bug 修復或功能優化，可以先記錄在此，避免遺忘]
-
 ### 高優先級 (High Priority)
-- [x] 實作 `scripts/bootstrap.py` 零依賴、非互動優先（參數驅動）之專案初始化工具。**【限制：只能使用 Python 標準庫內建支援的 JSON 格式，禁止自研 YAML/TOML 解析器】**
-- [x] 實作 `scripts/sync_project.py` 手動/顯式調用之進度同步工具。**【限制：狀態一律採用單一結構化 JSON/YAML 檔案，廢除 SQLite；堅持 Strict Parsing，解析失敗拋出 Traceback 觸發 Self-Correction】**
-- [x] 導入「記憶雙軌物理分離（熱記憶 `plan/MEMORY.md` 與冷記憶 `logs/cold-history.log`）」機制。
-- [x] 在 `plan/AGENT.md` 中新增「上下文負載與排除規則指引」與「HITL 二次確認」文字說明。
+- [x] 導入雙軌版本模式與動態裝配策略。
+- [x] 導入單一寫入者原則 (Single Writer Rule) 防範多 Sub-Agent 並行寫入覆蓋。
 
 ### 中優先級 (Medium Priority)
-- [ ] `[待辦項目一：例如，提供一鍵重設所有參數的功能]`
-- [ ] `[待辦項目二]`
-
-### 低優先級 (Low Priority)
-- [ ] `[待辦項目一：例如，支援多國語言介面切換]`
-- [ ] `[待辦項目二]`
+- [ ] 提供一鍵轉換舊版 CalVer 日期日誌至 SemVer 2.0 的獨立 Migration 腳本 (`scripts/migrate_version_strategy.py`)。

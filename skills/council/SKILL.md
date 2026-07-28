@@ -1,6 +1,19 @@
+---
+name: council
+description: 討論議會與多 Agent 協作機制 (Discussion Council & Multi-Agent Collaboration)，定義當面臨 T3 重大決策、核心架構修改、資料庫 Schema 變更或重大重構時，如何啟動多角色並線討論與審查機制。
+triggers:
+  - T3 重大決策
+  - 核心架構修改
+  - 資料庫 Schema 變更
+  - 新框架引入
+  - 重大重構
+  - 討論議會
+  - council
+---
+
 # 討論議會與協作規範 (Council & Collaboration Guidelines)
 
-本文件定義了在 AI 額度/Token 預算充裕且面臨重大決策與挑戰時，如何啟動並運行「討論議會 (Discussion Council)」或「多 Agent 協作」的具體流程與規範，以最大化利用 AI 的並線思維與批判特性，提升最終產出品質。
+本 Skill 定義了在 AI 額度/Token 預算充裕且面臨重大決策與挑戰時，如何啟動並運行「討論議會 (Discussion Council)」或「多 Agent 協作」的具體流程與規範，以最大化利用 AI 的並線思維與批判特性，提升最終產出品質。
 
 ---
 
@@ -71,9 +84,10 @@ graph TD
 - `[Resolving]`：Critic 已提出反饋，Executor 正在修改中。
 - `[Review Passed]`：Critic 確認無重大風險，準備結案。
 
-### 2. 暫存檔案生命週期管理 (Temp File Lifecycle)
-- **暫存目錄隔離**：所有議會交接的臨時文件（如 `task-desc.md`, `proposal-v1.md`, `critic-report-r1.md` 等）必須統一寫入獨立的 **`.council/`** 目錄中。該目錄必須列入 `.gitignore` 中，禁止提交至 Git 版本控制。
-- **結案歸檔與清理**：當狀態變更為 `Review Passed` 結案後，系統/後台腳本將整個 `.council/` 目錄壓縮打包（如 `.council-archive.zip`）移入 `logs/archived/` 目錄中以供未來審查稽核，隨後**自動清理並刪除**整個 `.council/` 目錄下的所有暫存檔，僅保留最終的決策檔案：**`doc/proposals/COUNCIL_DECISION.md`**，以防污染工作區。
+### 2. 暫存檔案生命週期與決策草案管理 (Temp File Lifecycle & Decision Drafts)
+- **暫存目錄隔離**：所有議會交接的臨時文件（如 `task-desc.md`, `proposal-v1.md`, `critic-report-r1.md` 等）與決策草案（`.council/COUNCIL_DECISION.md`）必須統一寫入獨立的 **`.council/`** 目錄中。該目錄必須列入 `.gitignore` 中，禁止提交至 Git 版本控制。
+- **決策檔生命週期**：決策草案維護於 `.council/COUNCIL_DECISION.md` 暫存檔。議會結論會立刻執行或與使用者討論，無持久化至 `doc/proposals/` 的需求。討論結束後隨 `.council/` 一起打包歸檔或清理。
+- **結案歸檔與清理**：當狀態變更為 `Review Passed` 結案後，系統/後台腳本（`archive_council.py`）將整個 `.council/` 目錄壓縮打包（如 `council-archive.zip`）移入 `logs/archived/` 目錄中以供未來審查稽核，隨後**自動清理並刪除**整個 `.council/` 目錄下的所有暫存檔與決策草案，以防污染工作區。
 
 ### 3. Handoff 規範 (Handoff Requirements)
 每次角色交接時，產出的交付物必須寫入 `.council/` 目錄，並符合以下標準格式：
@@ -126,7 +140,7 @@ sequenceDiagram
     end
 
     Note over Coord: 階段三：共識與歸檔 (Phase 3: Consensus)
-    Coord->>Coord: 產出 doc/proposals/COUNCIL_DECISION.md
+    Coord->>Coord: 產出 .council/COUNCIL_DECISION.md 並與使用者對齊或執行
     Coord->>Coord: 打包 .council/ 移入 logs/archived/ 並清理暫存
 ```
 
