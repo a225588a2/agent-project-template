@@ -13,13 +13,13 @@
 AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨脹與記憶失憶，實施 **「兩階段漸進式啟動 (Two-Stage Bootstrap Protocol)」**：
 
 1. **Stage 1 (熱記憶載入 - Hot Memory Load)**：
-   - 優先讀取 **`plan/MEMORY.md`**（約 1.5k Token），快速掌握當前專案滾動摘要與最近 3~5 筆變更。
+   - 優先讀取 **[[plan/MEMORY.md]]**（約 1.5k Token），快速掌握當前專案滾動摘要與最近 3~5 筆變更。
 2. **Stage 2 (邊界、護欄與 Skill 掃描 - Header & Skill Scan)**：
-   - 掃描 **`plan/TARGET.md`** 的 `Scope of Work (In/Out of Scope)` 標籤區段，確認專案邊界。
-   - 掃描 **`plan/AGENT.md`** 的 `Behavioral Guardrails (§6)` 標籤區段，確認安全紅線。
-   - 掃描 **`skills/`** 目錄結構與技能 Frontmatter（例如 [[skills/README.md]]），掌握專案可用技能庫與觸發機制。
+   - 掃描 **[[plan/TARGET.md]]** 的 `Scope of Work (In/Out of Scope)` 標籤區段，確認專案邊界。
+   - 掃描 **[[plan/AGENT.md]]** 的 `Behavioral Guardrails (§6)` 標籤區段，確認安全紅線。
+   - 掃描 **[[skills/]]** 目錄結構與技能 Frontmatter（例如 [[skills/README-SKILLS.md]]），掌握專案可用技能庫與觸發機制。
 3. **按需延伸與 Skill 觸發載入 (On-Demand Loading & Skill Triggering)**：
-   - 只有在處理具體功能、任務打勾或架構重構時，才按需載入 `plan/PROCESS.md`、`doc/` 或 `structure/`。
+   - 只有在處理具體功能、任務打勾或架構重構時，才按需載入 [[plan/PROCESS.md]]、[[doc/]] 或 [[structure/]]。
    - 當面臨特定的決策分級（如 T3 重大決策）或觸發關鍵字時，按需載入對應的 Skill 指引檔（例如 [[skills/council/SKILL.md]]）。
 
 > 讀取完畢後，以一段簡短摘要向使用者回報：「我已掌握專案現況，目前處於 [階段 X]，本專案版本策略為 [SemVer 2.0 / CalVer]，準備執行 [簡述下一步]。」
@@ -30,16 +30,16 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
 
 - **檔案命名規則 (全局)**：
   - **核心計畫與管理 Markdown 檔案**：強制使用 **UPPER-CASE (全大寫並以破折號 `-` 連接)**。
-    * *範例*：`README.md`、`TARGET.md`、`AGENT.md`、`PROCESS.md`、`MEMORY.md`、`GIT-GUIDE.md`
+    * *範例*：[[README.md]]、[[plan/TARGET.md]]、[[plan/AGENT.md]]、[[plan/PROCESS.md]]、[[plan/MEMORY.md]]、[[plan/GIT-GUIDE.md]]
   - **Skill 庫檔案**：Skill 目錄統一使用 kebab-case，主要指引檔案統一命名為 `SKILL.md`（包含 YAML Frontmatter 規範）。
-    * *範例*：`skills/council/SKILL.md`
+    * *範例*：[[skills/council/SKILL.md]]
   - **一般專案文件與規格書**：強制使用 **kebab-case (全小寫並以破折號 `-` 連接)**。
-    * *範例*：`functional-spec.md`、`data-schema.md`
+    * *範例*：[[doc/functional-spec-template.md]]、[[doc/data-schema-template.md]]
   - **程式原始碼與腳本**：依據語言慣例（例如 Python 專案強制使用 **snake_case**），嚴禁在 Python 檔名中使用破折號 `-` 以避免 import 語法錯誤。
-    * *範例*：`version_engine.py`、`sync_project.py`
+    * *範例*：[[scripts/version_engine.py]]、[[scripts/sync_project.py]]
 - **Markdown 優先與 Obsidian Wiki Link 鐵律 (禁止內部 file:///)**：
   - 所有非程式碼文件一律採用 Markdown 撰寫。
-  - **🚫 禁止內部 `file:///` 鐵律**：專案內部檔案之間的互相引用與知識庫關聯，**嚴禁使用 `file:///` 本地絕對路徑**（以防專案移動或複製時連結全數失效）。**只要在專案內部，一律強制使用 Obsidian Wiki Link 格式 (`[[TARGET]]` 或 `[[functional-spec#區段|別名]]`)**。
+  - **🚫 禁止內部 `file:///` 鐵律**：專案內部檔案之間的互相引用與知識庫關聯，**嚴禁使用 `file:///` 本地絕對路徑**（以防專案移動或複製時連結全數失效）。**只要在專案內部，一律強制使用 Obsidian Wiki Link 格式 (`[[plan/TARGET.md]]` 或 `[[doc/functional-spec-template.md#區段]]`)**。
   - **`file:///` 的唯一允許情境**：`file:///` **僅作為指向本機專案外部實體路徑（如系統全域環境資源）的最後避難手段 (Last Resort)**。
   - AI Agent 在閱讀與導覽專案時，應能原生識別 Wiki Link 並精確跳轉至對應物理檔案。
 
@@ -52,7 +52,7 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
   - **DataPool 批次原子性**：資料處理模組必須支援批次寫入與 Transaction 失敗回滾。
 - **SRP 單一職責原則 (Single Responsibility Principle)**：
   - 取消硬性 800 行切碎限制。程式碼模組拆分改以 SRP 原則評估。
-  - 對於高內聚且職責單一之模組（如 GUI 面板或 Protocol Spec 映射表），單檔上限放寬至 **1,200 行** 軟性警示。超過 1,200 行時應重構拆分並同步更新 `structure/modules.md`。
+  - 對於高內聚且職責單一之模組（如 GUI 面板或 Protocol Spec 映射表），單檔上限放寬至 **1,200 行** 軟性警示。超過 1,200 行時應進行重構拆分並同步更新專案模組架構說明。
 
 ---
 
@@ -61,7 +61,7 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
 ### 3.1 決策分級制度 (Decision Tiers)
 | 級別 | 定義 | Agent 行為 | 範例與處理流程 |
 | :--- | :--- | :--- | :--- |
-| **T1 自主決定** | 輕微改動、格式修正 | 直接執行，記錄至 `plan/cold-history.log` | 變數命名、排版、小幅文案修飾。 |
+| **T1 自主決定** | 輕微改動、格式修正 | 直接執行，記錄至 [[plan/cold-history.log]] | 變數命名、排版、小幅文案修飾。 |
 | **T2 知會即可** | 常規功能微調、參數優化 | 執行後主動簡報告知使用者 | 新增輔助函式、單元測試調整。 |
 | **T3 必須討論** | 核心架構變更、Schema 修改 | 暫停執行，提出選項討論後方可執行 | 變更資料庫 Schema、引進新套件、重大重構 (啟用 Council Skill: [[skills/council/SKILL.md]])。 |
 
@@ -70,7 +70,7 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
 - **派生限制**：單次任務子代理派生深度 `max_depth = 1`，最大併列數 `max_children = 2`。
 - **🔒 單一寫入者原則 (Single Writer Rule)**：
   - 子代理 (Sub-Agent) **僅具備唯讀權限，或僅能將產出寫入 `.council/` 暫存檔**。
-  - **嚴禁 Sub-Agent 直接呼叫 `sync_project.py` 或寫入 `plan/MEMORY.md` / `plan/cold-history.log`**。所有狀態同步與記憶更新必須統一回傳給 Parent Agent 審核後單線寫入，徹底防範並行寫入覆蓋 (Race Condition)。
+  - **嚴禁 Sub-Agent 直接呼叫 [[scripts/sync_project.py]] 或寫入 [[plan/MEMORY.md]] / [[plan/cold-history.log]]**。所有狀態同步與記憶更新必須統一回傳給 Parent Agent 審核後單線寫入，徹底防範並行寫入覆蓋 (Race Condition)。
 
 ---
 
@@ -83,7 +83,7 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
   - **Header 強制規範**：嚴格符合選定策略正則 (Conventional Commits / CalVer 前綴)。
   - **Body 不限制 / 允許使用中文說明 (Permitted CJK, not forced)**：方便詳細說明變更脈絡與設計理據。
 - **Git Hook 自動代勞與 2 次自我糾錯限制**：
-  - 變更完成後，一律執行 `python scripts/sync_project.py` 自動計算版號、打勾 ToDo 與格式化 Commit 標題。
+  - 變更完成後，一律執行 [[scripts/sync_project.py]] 自動計算版號、打勾 ToDo 與格式化 Commit 標題。
   - 若 Git Hook 攔截報錯，Agent 最多執行 **2 次 Self-Correction** 修正。若連續 2 次失敗，自動附加 `--no-verify` 提交 `WIP` 並觸發 HITL 人工介入。
 
 ---
@@ -94,11 +94,11 @@ Agent 在宣告任務完成前，必須通過 **「三維客觀 DoD 矩陣 (Thre
 
 ### DoD 審驗矩陣
 1. **Type C (代碼變更)**：`git diff` 包含 `.py` 等程式碼時，必須執行單元測試且 100% 綠燈通過。
-2. **Type A (純 Markdown/文檔變更)**：豁免單元測試，但**強制通過 `sync_project.py` 靜態檢驗**：
+2. **Type A (純 Markdown/文檔變更)**：豁免單元測試，但**強制通過 [[scripts/sync_project.py]] 靜態檢驗**：
    - 校驗 Markdown 檔內所有 `file:///` 本地連結是否存在。
    - 校驗 Markdown 內嵌 JSON / YAML 語法解析正確。
    - 校驗檔名大小寫與 kebab-case 格式。
-3. **狀態同步**：執行 `sync_project.py`，確認 `PROCESS.md` 待辦已打勾，`MEMORY.md` 索引已更新。
+3. **狀態同步**：執行 [[scripts/sync_project.py]]，確認 [[plan/PROCESS.md]] 待辦已打勾，[[plan/MEMORY.md]] 索引已更新。
 
 ---
 
@@ -107,7 +107,7 @@ Agent 在宣告任務完成前，必須通過 **「三維客觀 DoD 矩陣 (Thre
 ### ✅ 總是執行 (Always Do)
 - 每次開工前，執行兩階段 Bootstrapping 掃描熱記憶與護欄。
 - 每次編輯檔案前，貫徹 **先讀後寫 (Read-before-Write)** 原則。
-- 變更完成後，執行 `python scripts/sync_project.py` 完成同步與 DoD 靜態檢查。
+- 變更完成後，執行 [[scripts/sync_project.py]] 完成同步與 DoD 靜態檢查。
 
 ### ⚠️ 先詢問再行動 (Ask First)
 - 涉及 T3 門檻之架構修改、 Schema 變更或引進新依賴套件。

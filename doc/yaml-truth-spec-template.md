@@ -1,3 +1,6 @@
+<!-- [TEMPLATE ELEMENT / 模板要素] -->
+> **說明**：本檔案為 AI 專案模板之 YAML 唯一真理來源規格範本 (`yaml-truth-spec-template.md`)。專案初始化時應依本範本複製並建立專案實作檔 `doc/yaml-truth-spec.md`。
+
 # YAML 唯一真理來源 (Single Source of Truth) 架構與轉換規格範本
 
 本文件定義並規範了專案中「**將 YAML 作為唯一真理來源 (YAML as SSoT)**」的設計架構。此模式特別適用於包含大量結構化中介資料 (Metadata) 的專案（例如：暫存器定義地圖、通訊協定封包格式、系統暫存配置、靜態路由定義等），確保人類閱讀的規格文件、編譯器使用的程式碼，以及自動化測試腳本永遠保持一致，徹底解決「文件與代碼不同步 (Split-Brain)」的痛點。
@@ -164,7 +167,7 @@ registers:
 
 ## 🛠️ Python 轉換腳本架構設計
 
-為使程式碼與邏輯完全解耦，轉換腳本 `scripts/yaml_truth_converter.py` 採用經典的 **三層架構**：
+為使程式碼與邏輯完全解耦，轉換腳本 [[scripts/yaml_truth_converter.py]] 採用經典的 **三層架構**：
 
 ```mermaid
 graph TD

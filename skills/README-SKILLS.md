@@ -1,6 +1,6 @@
 # Skill 庫架構規範 (Skill Library Specification)
 
-本目錄 (`skills/`) 為專案的 **技能庫與專業 SOP 車間**，存放各類高階作業流程、決策機制與領域 SOP (Standard Operating Procedures)。AI Agent 或開發者可在特定情境下按需檢索、觸發與載入對應 Skill。
+本目錄 ([[skills/]]) 為專案的 **技能庫與專業 SOP 車間**，存放各類高階作業流程、決策機制與領域 SOP (Standard Operating Procedures)。AI Agent 或開發者可在特定情境下按需檢索、觸發與載入對應 Skill。
 
 ---
 
@@ -10,7 +10,7 @@
 
 ```text
 skills/
-├── README.md               # 本規範文件
+├── README-SKILLS.md        # 本規範文件
 ├── council/                # 討論議會與多 Agent 協作 Skill
 │   └── SKILL.md            # Council 技能核心指引 (YAML Frontmatter + Markdown)
 └── <skill-name>/           # 其他專屬技能目錄 (kebab-case)

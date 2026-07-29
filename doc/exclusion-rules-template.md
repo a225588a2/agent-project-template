@@ -1,3 +1,6 @@
+<!-- [TEMPLATE ELEMENT / 模板要素] -->
+> **說明**：本檔案為 AI 專案模板之排除與過濾規則規範範本 (`exclusion-rules-template.md`)。專案初始化時應依本範本複製並建立專案實作檔 `doc/exclusion-rules.md`。
+
 # 排除與過濾規則規格書模板 (Exclusion Rules)
 
 本文件定義專案中需要被排除、忽略或過濾的檔案、目錄、關鍵字或條件。適用於資料清洗、搜尋過濾、建庫掃描、報告生成等各種場景。
