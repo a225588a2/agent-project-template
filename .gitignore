@@ -71,6 +71,7 @@ dmypy.json
 .vscode/
 .cursor/
 .obsidian/
+.agents/
 .DS_Store
 Thumbs.db
 Desktop.ini
