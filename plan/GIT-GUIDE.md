@@ -7,7 +7,7 @@
 ## 1. 作者簽名與身份規範 (Author Signature)
 
 本專案要求所有 Commit 必須具備明確的作者簽名，防止提交身份混亂：
-- 於專案初始化時，`python scripts/bootstrap.py` 會自動檢查並引導配置。
+- 於專案初始化時，[[scripts/bootstrap.py]] 會自動檢查並引導配置。
 - 手動配置指令：
   ```bash
   git config user.name "Your Name"
@@ -18,7 +18,8 @@
 
 ## 2. 雙軌版本策略規範 (Dual Versioning Strategy)
 
-本專案支援 **雙軌版本模式**，於專案初始化 (`bootstrap.py`) 時鎖定寫入 `.sync-state.json`：
+本專案支援 **雙軌版本模式**，於專案初始化 ([[scripts/bootstrap.py]]) 時鎖定寫入 `.sync-state.json`：
+- **未選定機制清理規範 (Unselected Mechanism Cleanup Rule)**：於專案初始化 ([[scripts/bootstrap.py]]) 完成特定 Git 維護機制（SemVer 2.0 或 CalVer）選擇後，必須明確移除未選定機制之相應設定、邏輯與說明檔，確保專案僅保留所選定之單一維護機制。
 
 ### 模式 A：SemVer 2.0 語意化版本 (適用於程式碼/軟體/套件專案)
 - **版本號格式**：`vMAJOR.MINOR.PATCH[-PRERELEASE]` (例如 `v1.0.0`, `v1.2.3`)
@@ -43,7 +44,7 @@
 專案配置了 `pre-commit` 與 `commit-msg` Git Hooks（位於 `.git/hooks/`）：
 
 ### 驗證規則
-1. **版號一致性**：確保 `plan/PROCESS.md`、`plan/cold-history.log` 與 `.sync-state.json` 的版號一致。
+1. **版號一致性**：確保 [[plan/PROCESS.md]]、[[plan/cold-history.log]] 與 `.sync-state.json` 的版號一致。
 2. **Commit Header 格式**：依選定策略檢查 Header 正則 (Conventional Commits / CalVer 前綴)。
 3. **Commit Body 說明**：Body 不限制/允許使用中文說明 (Permitted CJK, not forced)。
 
