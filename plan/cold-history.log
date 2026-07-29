@@ -12,8 +12,8 @@
 - summary:
   * Initiate Multi-Agent Council to debate and design the YAML-as-SSoT architecture.
   * Add doc/yaml-truth-spec.md as the main specification and conversion template.
-  * Add doc/proposals/COUNCIL_DECISION_YAML.md to document the council decision and safety controls.
-  * Archive and clean up the temporary .council/ workspace files to logs/archived/council-archive.zip.
+  * Add doc/yaml-truth-spec.md to document the council decision and safety controls.
+  * Archive and clean up the temporary .council/ workspace files to logs/archived/.
 
 [2026/07/28 v1.0.0] Refactor template to v2.0 Production Edition with Skill Library and Dual Versioning Strategy
 - todo_ref: null

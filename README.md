@@ -30,7 +30,7 @@
 
 | 目錄 | 職責定位 (造車公司比喻) | 關鍵檔案 |
 | :--- | :--- | :--- |
-| **[[plan/]]** | 企業目標與管理層（開工必讀入口） | [[TARGET]] (專案目標與邊界)<br>[[AGENT]] (工作與命名規範)<br>[[PROCESS]] (里程碑與待辦 ToDo)<br>[[MEMORY]] (熱記憶索引)<br>[[plan/cold-history.log]] (完整歷史日誌，Grep 代替 RAG)<br>[[GIT-GUIDE]] (Git 雙軌規範與發布指引) |
+| **[[plan/]]** | 企業目標與管理層（開工必讀入口） | [[TARGET]] (專案目標與邊界)<br>[[AGENT]] (工作與命名規範)<br>[[PROCESS]] (里程碑與待辦 ToDo)<br>[[MEMORY]] (熱記憶索引)<br>[[plan/cold-history.log]] (完整歷史日誌，Grep 代替 RAG)<br>[[plan/GIT-GUIDE.md]] (Git 雙軌規範與發布指引) |
 | **[[doc/]]** | 產品與專案規格書（按需載入） | `functional-spec.md` (功能與邏輯規格)<br>`data-schema.md` (資料表與 Schema 規格)<br>`yaml-truth-spec.md` (YAML 唯一真理規格範本) |
 | **[[structure/]]** | 工程藍圖與電路設計圖 | `modules.md` (物理模組與職責地圖)<br>`diagram.md` (Mermaid 時序與動態流程圖) |
 | **[[skills/]]** | 技能庫與專業 SOP 車間（按需觸發與載入） | [[skills/README.md]] (Skill 庫規範說明)<br>[[skills/council/SKILL.md]] (多 Agent 議會討論 Skill) |
@@ -123,7 +123,7 @@ cp -r <範本專案根目錄>/skills/* <目標專案根目錄>/skills/
   ```powershell
   mv <目標專案根目錄>/plan/TARGET-template.md <目標專案根目錄>/plan/TARGET.md
   mv <目標專案根目錄>/plan/AGENT-template.md <目標專案根目錄>/plan/AGENT.md
-  mv <目標專案根目錄>/plan/PROCESS.md <目標專案根目錄>/plan/PROCESS.md
+  mv <目標專案根目錄>/plan/PROCESS-template.md <目標專案根目錄>/plan/PROCESS.md
   ```
 
 ##### 2. 第二階段：建立專案門面與規劃 (README.md & .gitignore)
