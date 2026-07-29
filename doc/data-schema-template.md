@@ -1,3 +1,6 @@
+<!-- [TEMPLATE ELEMENT / 模板要素] -->
+> **說明**：本檔案為 AI 專案模板之資料與配置規格範本 (`data-schema-template.md`)。專案初始化時應依本範本複製並建立專案實作檔 `doc/data-schema.md`。
+
 # 資料與配置規格書模板 (Data Schema)
 
 本文件詳細定義專案中所有資料存儲媒介的結構設計，包含關係型資料表 (DDL)、NoSQL、快取快照、外部配置檔格式 (JSON/YAML) 等。

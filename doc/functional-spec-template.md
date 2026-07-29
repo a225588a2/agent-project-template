@@ -1,3 +1,6 @@
+<!-- [TEMPLATE ELEMENT / 模板要素] -->
+> **說明**：本檔案為 AI 專案模板之功能與邏輯規格範本 (`functional-spec-template.md`)。專案初始化時應依本範本複製並建立專案實作檔 `doc/functional-spec.md`。
+
 # 功能與邏輯規格書模板 (Functional Specification)
 
 本規格書詳細定義專案中特定模組或功能的實作細節、核心邏輯、輸入輸出要求以及計算規則。
