@@ -86,7 +86,7 @@ graph TD
 
 ### 2. 暫存檔案生命週期與決策草案管理 (Temp File Lifecycle & Decision Drafts)
 - **暫存目錄隔離**：所有議會交接的臨時文件（如 `task-desc.md`, `proposal-v1.md`, `critic-report-r1.md` 等）與決策草案（`.council/COUNCIL_DECISION.md`）必須統一寫入獨立的 **`.council/`** 目錄中。該目錄必須列入 `.gitignore` 中，禁止提交至 Git 版本控制。
-- **決策檔生命週期**：決策草案維護於 `.council/COUNCIL_DECISION.md` 暫存檔。議會結論會立刻執行或與使用者討論，無持久化至 `doc/proposals/` 的需求。討論結束後隨 `.council/` 一起打包歸檔或清理。
+- **決策檔生命週期**：決策草案維護於 `.council/COUNCIL_DECISION.md` 暫存檔。議會結論會立刻執行或與使用者討論，無持久化至 `logs/archived/` 的需求。討論結束後隨 `.council/` 一起打包歸檔或清理。
 - **結案歸檔與清理**：當狀態變更為 `Review Passed` 結案後，系統/後台腳本（`archive_council.py`）將整個 `.council/` 目錄壓縮打包（如 `council-archive.zip`）移入 `logs/archived/` 目錄中以供未來審查稽核，隨後**自動清理並刪除**整個 `.council/` 目錄下的所有暫存檔與決策草案，以防污染工作區。
 
 ### 3. Handoff 規範 (Handoff Requirements)

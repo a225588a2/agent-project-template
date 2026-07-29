@@ -39,4 +39,4 @@
 - **變更項目**：
   * Initiate Multi-Agent Council to debate and design the YAML-as-SSoT architecture.
   * Add doc/yaml-truth-spec.md as the main specification and conversion template.
-  * Archive temporary .council/ workspace files to logs/archived/council-archive.zip.
+  * Archive temporary .council/ workspace files to logs/archived/.

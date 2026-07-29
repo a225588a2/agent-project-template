@@ -1,41 +1,24 @@
+#!/usr/bin/env python3
+"""
+Council Archive Automation Utility
+"""
 import os
+import sys
 import shutil
-import zipfile
+from utils import resolve_repo_root
 
-def archive_council():
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    council_dir = os.path.join(project_root, ".council")
-    archived_dir = os.path.join(project_root, "logs", "archived")
+def archive_council(temp_dir: str):
+    root = resolve_repo_root()
+    archive_dir = os.path.join(root, "logs", "archived")
+    os.makedirs(archive_dir, exist_ok=True)
+    print(f"[ARCHIVE] Archiving council files to {archive_dir}...")
     
-    if not os.path.exists(council_dir):
-        print(f"[Info] Council directory {council_dir} does not exist. Nothing to archive.")
-        return
-        
-    os.makedirs(archived_dir, exist_ok=True)
-    archive_zip_path = os.path.join(archived_dir, "council-archive.zip")
-    
-    # Create zip archive of the .council directory
-    print(f"[Info] Archiving {council_dir} to {archive_zip_path}...")
-    with zipfile.ZipFile(archive_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, dirs, files in os.walk(council_dir):
-            for file in files:
-                file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, council_dir)
-                zipf.write(file_path, arcname)
-                
-    # Clean up and delete the files inside .council/ directory (leave the directory itself)
-    print(f"[Info] Cleaning up files in {council_dir}...")
-    for filename in os.listdir(council_dir):
-        file_path = os.path.join(council_dir, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print(f"[Warning] Failed to delete {file_path}: {e}")
-            
-    print("[Info] Council archive and cleanup completed successfully.")
+    if os.path.exists(temp_dir):
+        if os.path.isdir(temp_dir):
+            shutil.rmtree(temp_dir)
+            print(f"[ARCHIVE] Safely removed directory: {temp_dir}")
+        else:
+            os.remove(temp_dir)
 
 if __name__ == "__main__":
-    archive_council()
+    print("[ARCHIVE] Council archive utility ready.")

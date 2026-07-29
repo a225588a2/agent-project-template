@@ -237,3 +237,5 @@ Cloudflare 的 templates 開源庫同樣展示了這套防禦哲學。他們開�
 32. Best AI Prompt Generator for Anthropic 2026 – NeuraPlusAI Blog \- NeuraPulse AI, [https://neuraplus-ai.github.io/blog/best-ai-prompt-generator-anthropic-2026.html](https://neuraplus-ai.github.io/blog/best-ai-prompt-generator-anthropic-2026.html)  
 33. Increase output consistency \- Claude API Docs, [https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency](https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency)  
 34. AGENTS.md — a simple, open format for guiding coding agents · GitHub, [https://github.com/agentsmd/agents.md](https://github.com/agentsmd/agents.md)
+
+> Note: 本專案範本簡化了 `adapters/` 相容層架構，改由 `source/` 模組直接提供標準介面。
