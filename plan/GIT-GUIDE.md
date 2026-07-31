@@ -39,6 +39,7 @@
 - **分支模型**：**Gitflow 雙主線 (`main` + `develop` + 主題分支 `feature/*`)**
   - ⚠️ **main 分支不變律**：`main` 上的每個 Commit 點**必須且只能**對應一個發布 Tag（如 `v1.0.0`）。日常開發嚴禁推進無 Tag 的 Commit 至 `main`。
   - ⚠️ **強制 `--no-ff` 合併**：`develop` 合併至 `main` 時**必須**使用 `git merge --no-ff`，並在 Merge Commit 訊息中條列本版本的變動摘要 (Release Summary)。
+  - ⚠️ **維持雙主線同步 (Fast-forward develop)**：當 `develop` 成功 `--no-ff` 合併至 `main` 且發布完成後，**必須立即**將 `develop` 切換並快進 (`git checkout develop && git merge main --ff-only`) 至 `main` 的最新 HEAD。這可確保下次在 `develop` 上的 Commit 能維持 Git Tree 完美的拱門結構。
 - **主題分支生命週期**：
   1. 從 `develop` 切出（`git checkout -b <type>/<short-name> develop`）
   2. 完成開發並通過 DoD 驗證（參照 [[plan/AGENT.md]] §5）
