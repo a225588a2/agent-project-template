@@ -29,6 +29,13 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
 > 讀取完畢後，以一段簡短摘要向使用者回報：「我已掌握專案現況，目前處於 [階段 X]，本專案版本策略為 CalVer，準備執行 [簡述下一步]。」
 <!-- @END:CALVER -->
 
+4. **新專案初始化守則 (New Project Bootstrap Rule)**：
+   - 當被指派從本範本初始化新專案時，Agent **必須先與使用者確認**以下三項設定後方可執行 [[scripts/bootstrap.py]]：
+     1. **版本策略**：SemVer 2.0 或 CalVer？
+     2. **專案名稱** (`--name`)
+     3. **選用目錄** (`--modules`)：參照 [[README.md]] 目錄增減決策樹。
+   - **禁止**使用 `--non-interactive` 參數自行跳過確認。
+
 ---
 
 ## 1. 命名與文件規則 (Naming & Documentation Rules)
