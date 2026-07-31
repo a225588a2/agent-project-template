@@ -9,9 +9,14 @@
 1. **兩階段漸進式啟動 (Progressive Disclosure - Two-Stage Bootstrap)**：
    - **Stage 1 (熱載入)**：讀取 [[plan/MEMORY.md]]（約 1.5k Token 滾動摘要與最近變更）。
    - **Stage 2 (標籤掃描)**：輕量掃描 [[plan/TARGET.md]] 的 Scope 與 [[plan/AGENT.md]] 的 Guardrails 標籤區段，控制 Token 於極小範疇，杜絕失憶越界。
-1. **git 版本控制-雙軌版本模式 (Dual Versioning Strategy)**：
-   - **SemVer 2.0 (`vMAJOR.MINOR.PATCH`)**：適用於程式碼、軟體成品、套件與技術研究專案 (配合 Conventional Commits 與 Gitflow)。
-   - **CalVer 日期導向 (`vYYYY.MM.DD` / `v1.0.YYYYMMDD.Z`)**：適用於個人筆記、每日日誌、資料整理專案。
+<!-- @KEEP:SEMVER -->
+1. **git 版本控制 - SemVer 2.0 (`vMAJOR.MINOR.PATCH`)**：
+   - 配合 Conventional Commits 與 Gitflow 雙主線模型。
+<!-- @END:SEMVER -->
+<!-- @KEEP:CALVER -->
+1. **git 版本控制 - CalVer 日期導向 (`vYYYY.MM.DD` / `v1.0.YYYYMMDD.Z`)**：
+   - 適用於個人筆記、每日日誌、資料整理專案，輕量單主線模型。
+<!-- @END:CALVER -->
 3. **單一寫入者原則 (Single Writer Rule)**：
    - 開放 AI 主動調度 Sub-Agent，但 Sub-Agent 僅具備唯讀或 [[skills/council/]] 暫存寫入權限。所有全局狀態同步與 Log / Memory 寫入統一由 Parent Agent 單線執行，防範 Race Condition。
 4. **三維客觀 DoD 矩陣 (Three-Dimensional DoD Matrix)**：
@@ -66,6 +71,7 @@
 
 ---
 
+<!-- @KEEP:TEMPLATE -->
 ## 🤖 如何在「Agent 層面」與「檔案層面」調用本範本 (Usage Guide)
 
 使用本模板時，**使用者完全無需手動複製整包專案檔案**，可透過 AI Agent 一指 Prompt 指引或 CLI 工具腳本輕鬆建立新專案：
@@ -73,8 +79,11 @@
 ### 🤖 1. Agent 層面使用指引 (Agent-Driven Initialization)
 若您是在 IDE (如 Antigravity / Cursor / VSCode) 或對話環境中搭配 AI Agent 開發，您**只需向您環境中的 AI Agent 下達指令**，讓 Agent 讀取本範本並執行啟動：
 
-> **💬 Prompt 範例**：
-> 「請閱讀這個 AI 專案模板 `c:/PersonalWS/AgentSandBox/AiProjectTemplate`，並幫我在 `c:/PersonalWS/MyNewProject` 建立一個名為 `MyNewProject` 的新專案，版本策略採用 SemVer 2.0 (或 CalVer)。」
+> **💬 Agent 啟動提示詞 (直接複製貼上即可)**：
+> ```text
+> 請閱讀這個 AI 專案模板 c:\PersonalWS\AgentSandBox\AiProjectTemplate 的 README.md，並按照說明幫我在 <填寫目標目錄> 建立一個新專案。
+> ```
+> *(註：刻意不指定版本與模組，引導 Agent 閱讀文件後主動向您確認。)*
 
 #### 📁 運作原理 (File-Level Mechanism & Lifecycle)
 - **檔案複製與一次性裝配**：[[scripts/bootstrap.py]] 腳本執行時，會將本範本中的必要核心目錄 ([[plan/]], [[doc/]], [[structure/]], [[scripts/]], [[skills/]]) 與工具檔複製並渲染寫入至指定的「目標目錄」。
@@ -97,8 +106,15 @@ python scripts/bootstrap.py --target-dir <目標目錄> --name "專案名稱" --
 
 * **參數說明**：
   - `--version-strategy` (`-v`)：可指定 `semver` (程式碼/軟體專案) 或 `calver` (筆記/日誌專案)。
-  - 於 TTY 互動模式下會顯示對話選單；於 `--non-interactive` 模式下會自動進行**啟發式自動推斷 (Smart Auto-Detection)** 檢測專案特徵檔案。
+  - `--modules` (`-m`)：逗號分隔的選用目錄清單（例如 `"source,test"`），參照上方「目錄增減決策樹」。
+  - `--non-interactive`：跳過互動選單，自動推斷策略。**僅供 CI/CD 使用，Agent 不得使用此參數。**
   - 初始化過程會檢查並引導設定 Git `user.name` 與 `user.email` 作者簽名。
+
+> [!WARNING]
+> **Agent 啟動守則**：執行 `bootstrap.py` 前，Agent **必須先與使用者確認**以下設定，不得自行假設或使用 `--non-interactive` 跳過：
+> 1. **版本策略**：SemVer 2.0 或 CalVer？
+> 2. **專案名稱**：確認 `--name` 值。
+> 3. **選用目錄**：是否需要 `source/`、`test/`、`scripts/`、`refer/`？（參照決策樹）
 
 ---
 
@@ -149,6 +165,7 @@ cp <範本專案根目錄>/doc/data-schema-template.md <目標專案根目錄>/d
 
 > [!TIP]
 > **啟動完成後清理**：當專案成功初始化並解鎖啟用後，使用者或 Agent 可自行決定是否將本 [[README.md]] 中關於手動啟動的說明刪除，僅保留專案介紹，以保持專案根目錄文件清爽。
+<!-- @END:TEMPLATE -->
 
 ---
 
@@ -166,5 +183,10 @@ python scripts/sync_project.py [--bump patch|minor|major]
 3. **自動打勾 ToDo**：比對 log 中的 `todo_ref` 自動打勾 [[plan/PROCESS.md]]。
 4. **自動更新熱記憶**：將變更索引回寫至 [[plan/MEMORY.md]]。
 5. **Git Commit 語意規範**：
-   - **Header 強制規範**：嚴格符合 Conventional Commits 正則 (`type(scope): summary`) 或 CalVer 前綴 (`vX.Y.YYYYMMDD.Z summary`)。
+<!-- @KEEP:SEMVER -->
+   - **Header 強制規範**：嚴格符合 Conventional Commits 正則 (`type(scope): summary`)。
+<!-- @END:SEMVER -->
+<!-- @KEEP:CALVER -->
+   - **Header 強制規範**：嚴格符合 CalVer 前綴正則 (`vX.Y.YYYYMMDD.Z summary`)。
+<!-- @END:CALVER -->
    - **Body 不限制 / 允許使用中文說明 (Permitted CJK, not forced)**：方便詳細說明變更脈絡與設計理據。

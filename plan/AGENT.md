@@ -22,7 +22,19 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
    - 只有在處理具體功能、任務打勾或架構重構時，才按需載入 [[plan/PROCESS.md]]、[[doc/]] 或 [[structure/]]。
    - 當面臨特定的決策分級（如 T3 重大決策）或觸發關鍵字時，按需載入對應的 Skill 指引檔（例如 [[skills/council/SKILL.md]]）。
 
-> 讀取完畢後，以一段簡短摘要向使用者回報：「我已掌握專案現況，目前處於 [階段 X]，本專案版本策略為 [SemVer 2.0 / CalVer]，準備執行 [簡述下一步]。」
+<!-- @KEEP:SEMVER -->
+> 讀取完畢後，以一段簡短摘要向使用者回報：「我已掌握專案現況，目前處於 [階段 X]，本專案版本策略為 SemVer 2.0，準備執行 [簡述下一步]。」
+<!-- @END:SEMVER -->
+<!-- @KEEP:CALVER -->
+> 讀取完畢後，以一段簡短摘要向使用者回報：「我已掌握專案現況，目前處於 [階段 X]，本專案版本策略為 CalVer，準備執行 [簡述下一步]。」
+<!-- @END:CALVER -->
+
+4. **新專案初始化守則 (New Project Bootstrap Rule)**：
+   - 當被指派從本範本初始化新專案時，Agent **必須先與使用者確認**以下三項設定後方可執行 [[scripts/bootstrap.py]]：
+     1. **版本策略**：SemVer 2.0 或 CalVer？
+     2. **專案名稱** (`--name`)
+     3. **選用目錄** (`--modules`)：參照 [[README.md]] 目錄增減決策樹。
+   - **禁止**使用 `--non-interactive` 參數自行跳過確認。
 
 ---
 
@@ -76,11 +88,18 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
 
 ## 4. 版本控制與 Git 規範 (Version Control & Git Rules)
 
-- **雙軌版本模式 (Dual Versioning Strategy)**：
-  - **SemVer 2.0 (程式碼/軟體專案)**：版號 `vMAJOR.MINOR.PATCH`（如 `v1.0.0`），Commit 標題遵守 Conventional Commits (`type(scope): subject`)。
-  - **CalVer (筆記/日誌/資料專案)**：版號 `vYYYY.MM.DD` 或 `v1.0.YYYYMMDD.Z`，Commit 標題開頭附帶版號前綴。
+<!-- @KEEP:SEMVER -->
+- **版本模式 (SemVer 2.0)**：
+  - 版號 `vMAJOR.MINOR.PATCH`（如 `v1.0.0`），Commit 標題遵守 Conventional Commits (`type(scope): subject`)。
 - **Commit 語意規範**：
-  - **Header 強制規範**：嚴格符合選定策略正則 (Conventional Commits / CalVer 前綴)。
+  - **Header 強制規範**：嚴格符合 Conventional Commits 正則。
+<!-- @END:SEMVER -->
+<!-- @KEEP:CALVER -->
+- **版本模式 (CalVer)**：
+  - 版號 `vYYYY.MM.DD` 或 `v1.0.YYYYMMDD.Z`，Commit 標題開頭附帶版號前綴。
+- **Commit 語意規範**：
+  - **Header 強制規範**：嚴格符合 CalVer 前綴正則。
+<!-- @END:CALVER -->
   - **Body 不限制 / 允許使用中文說明 (Permitted CJK, not forced)**：方便詳細說明變更脈絡與設計理據。
 - **Git Hook 自動代勞與 2 次自我糾錯限制**：
   - 變更完成後，一律執行 [[scripts/sync_project.py]] 自動計算版號、打勾 ToDo 與格式化 Commit 標題。
@@ -117,6 +136,8 @@ Agent 在宣告任務完成前，必須通過 **「三維客觀 DoD 矩陣 (Thre
 - 絕不將 API Key、密碼或憑證硬編碼於代碼或 Git 版本庫中。
 - 絕不上傳或外洩 `.env` 或機敏設定檔至外部網路。
 - 絕不下達未經確認的破壞性清空指令 (如 `rm -rf /` 或 `git reset --hard` 未暫存變更)。
+- 絕不自動執行 `git push origin --delete` 刪除遠端分支（遠端分支清理必須由人類開發者或 PR/MR 工具處置）。
+- 絕不自動執行 `git branch -D` 強制刪除本地分支（若 `git branch -d` 失敗代表存有未整合 Commit，必須停止並回報）。
 
 ---
 

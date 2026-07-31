@@ -5,6 +5,7 @@ Core Dual Versioning Strategy Engine (SemVer & CalVer)
 import os
 import sys
 import re
+import json
 from datetime import datetime
 from typing import Tuple, List, Dict, Optional
 
@@ -70,6 +71,17 @@ def update_repo_versions(repo_path: str, new_version: str):
                     print(f"[VERSION Engine] Updated {fpath} -> {new_version}")
                 except Exception as e:
                     print(f"[ERROR] Updating {fpath}: {e}")
+
+def get_strategy(repo_root: str):
+    """Read .sync-state.json and return the appropriate version strategy."""
+    import json
+    state_file = os.path.join(repo_root, ".sync-state.json")
+    if os.path.exists(state_file):
+        with open(state_file, "r", encoding="utf-8") as f:
+            state = json.load(f)
+        if state.get("version_strategy") == "calver":
+            return CalVerStrategy()
+    return SemVerStrategy()
 
 if __name__ == "__main__":
     print("[VERSION Engine] Engine initialized.")
