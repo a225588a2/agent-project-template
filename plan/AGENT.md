@@ -91,6 +91,7 @@ AI Agent 每次開啟新對話時屬於無狀態起點。為防範 Context 膨�
 <!-- @KEEP:SEMVER -->
 - **版本模式 (SemVer 2.0)**：
   - 版號 `vMAJOR.MINOR.PATCH`（如 `v1.0.0`），Commit 標題遵守 Conventional Commits (`type(scope): subject`)。
+  - **Release Tag 註解規範**：於 `main` 建立版本發布 Tag 時，**必須**使用附註標籤 (`git tag -a vX.X.X -m "..."`)，並在訊息中具體註記該版本的重點改進內容。
   - **Gitflow 雙主線同步紀律**：當 `develop` 以 `--no-ff` 合併至 `main` 完成發布後，**必須立即將 `develop` 快進 (`--ff-only`) 至 `main`**，以保持漂亮的 Git Tree 拱門結構。
 - **Commit 語意規範**：
   - **Header 強制規範**：嚴格符合 Conventional Commits 正則。
