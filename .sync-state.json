@@ -1,7 +1,7 @@
 {
-  "version": "v1.0.2",
+  "version": "v1.0.3",
   "version_strategy": "semver",
-  "last_updated": "2026-07-29T14:58:00.000000",
+  "last_updated": "2026-08-01T07:26:00.287077",
   "last_todo_ref": null,
   "last_commit_summary": "release(v1.0.2): refactor template elements, add -template suffix, convert Wiki Links, and streamline specs"
 }
