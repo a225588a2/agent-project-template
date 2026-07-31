@@ -79,8 +79,11 @@
 ### 🤖 1. Agent 層面使用指引 (Agent-Driven Initialization)
 若您是在 IDE (如 Antigravity / Cursor / VSCode) 或對話環境中搭配 AI Agent 開發，您**只需向您環境中的 AI Agent 下達指令**，讓 Agent 讀取本範本並執行啟動：
 
-> **💬 Prompt 範例**：
-> 「請閱讀這個 AI 專案模板 `c:/PersonalWS/AgentSandBox/AiProjectTemplate`，並幫我在 `c:/PersonalWS/MyNewProject` 建立一個名為 `MyNewProject` 的新專案，版本策略採用 SemVer 2.0 (或 CalVer)。」
+> **💬 Agent 啟動提示詞 (直接複製貼上即可)**：
+> ```text
+> 請閱讀這個 AI 專案模板 c:\PersonalWS\AgentSandBox\AiProjectTemplate 的 README.md，並按照說明幫我在 <填寫目標目錄> 建立一個新專案。
+> ```
+> *(註：刻意不指定版本與模組，引導 Agent 閱讀文件後主動向您確認。)*
 
 #### 📁 運作原理 (File-Level Mechanism & Lifecycle)
 - **檔案複製與一次性裝配**：[[scripts/bootstrap.py]] 腳本執行時，會將本範本中的必要核心目錄 ([[plan/]], [[doc/]], [[structure/]], [[scripts/]], [[skills/]]) 與工具檔複製並渲染寫入至指定的「目標目錄」。
@@ -103,8 +106,15 @@ python scripts/bootstrap.py --target-dir <目標目錄> --name "專案名稱" --
 
 * **參數說明**：
   - `--version-strategy` (`-v`)：可指定 `semver` (程式碼/軟體專案) 或 `calver` (筆記/日誌專案)。
-  - 於 TTY 互動模式下會顯示對話選單；於 `--non-interactive` 模式下會自動進行**啟發式自動推斷 (Smart Auto-Detection)** 檢測專案特徵檔案。
+  - `--modules` (`-m`)：逗號分隔的選用目錄清單（例如 `"source,test"`），參照上方「目錄增減決策樹」。
+  - `--non-interactive`：跳過互動選單，自動推斷策略。**僅供 CI/CD 使用，Agent 不得使用此參數。**
   - 初始化過程會檢查並引導設定 Git `user.name` 與 `user.email` 作者簽名。
+
+> [!WARNING]
+> **Agent 啟動守則**：執行 `bootstrap.py` 前，Agent **必須先與使用者確認**以下設定，不得自行假設或使用 `--non-interactive` 跳過：
+> 1. **版本策略**：SemVer 2.0 或 CalVer？
+> 2. **專案名稱**：確認 `--name` 值。
+> 3. **選用目錄**：是否需要 `source/`、`test/`、`scripts/`、`refer/`？（參照決策樹）
 
 ---
 
