@@ -9,9 +9,14 @@
 1. **兩階段漸進式啟動 (Progressive Disclosure - Two-Stage Bootstrap)**：
    - **Stage 1 (熱載入)**：讀取 [[plan/MEMORY.md]]（約 1.5k Token 滾動摘要與最近變更）。
    - **Stage 2 (標籤掃描)**：輕量掃描 [[plan/TARGET.md]] 的 Scope 與 [[plan/AGENT.md]] 的 Guardrails 標籤區段，控制 Token 於極小範疇，杜絕失憶越界。
-1. **git 版本控制-雙軌版本模式 (Dual Versioning Strategy)**：
-   - **SemVer 2.0 (`vMAJOR.MINOR.PATCH`)**：適用於程式碼、軟體成品、套件與技術研究專案 (配合 Conventional Commits 與 Gitflow)。
-   - **CalVer 日期導向 (`vYYYY.MM.DD` / `v1.0.YYYYMMDD.Z`)**：適用於個人筆記、每日日誌、資料整理專案。
+<!-- @KEEP:SEMVER -->
+1. **git 版本控制 - SemVer 2.0 (`vMAJOR.MINOR.PATCH`)**：
+   - 配合 Conventional Commits 與 Gitflow 雙主線模型。
+<!-- @END:SEMVER -->
+<!-- @KEEP:CALVER -->
+1. **git 版本控制 - CalVer 日期導向 (`vYYYY.MM.DD` / `v1.0.YYYYMMDD.Z`)**：
+   - 適用於個人筆記、每日日誌、資料整理專案，輕量單主線模型。
+<!-- @END:CALVER -->
 3. **單一寫入者原則 (Single Writer Rule)**：
    - 開放 AI 主動調度 Sub-Agent，但 Sub-Agent 僅具備唯讀或 [[skills/council/]] 暫存寫入權限。所有全局狀態同步與 Log / Memory 寫入統一由 Parent Agent 單線執行，防範 Race Condition。
 4. **三維客觀 DoD 矩陣 (Three-Dimensional DoD Matrix)**：
@@ -66,6 +71,7 @@
 
 ---
 
+<!-- @KEEP:TEMPLATE -->
 ## 🤖 如何在「Agent 層面」與「檔案層面」調用本範本 (Usage Guide)
 
 使用本模板時，**使用者完全無需手動複製整包專案檔案**，可透過 AI Agent 一指 Prompt 指引或 CLI 工具腳本輕鬆建立新專案：
@@ -149,6 +155,7 @@ cp <範本專案根目錄>/doc/data-schema-template.md <目標專案根目錄>/d
 
 > [!TIP]
 > **啟動完成後清理**：當專案成功初始化並解鎖啟用後，使用者或 Agent 可自行決定是否將本 [[README.md]] 中關於手動啟動的說明刪除，僅保留專案介紹，以保持專案根目錄文件清爽。
+<!-- @END:TEMPLATE -->
 
 ---
 
@@ -166,5 +173,10 @@ python scripts/sync_project.py [--bump patch|minor|major]
 3. **自動打勾 ToDo**：比對 log 中的 `todo_ref` 自動打勾 [[plan/PROCESS.md]]。
 4. **自動更新熱記憶**：將變更索引回寫至 [[plan/MEMORY.md]]。
 5. **Git Commit 語意規範**：
-   - **Header 強制規範**：嚴格符合 Conventional Commits 正則 (`type(scope): summary`) 或 CalVer 前綴 (`vX.Y.YYYYMMDD.Z summary`)。
+<!-- @KEEP:SEMVER -->
+   - **Header 強制規範**：嚴格符合 Conventional Commits 正則 (`type(scope): summary`)。
+<!-- @END:SEMVER -->
+<!-- @KEEP:CALVER -->
+   - **Header 強制規範**：嚴格符合 CalVer 前綴正則 (`vX.Y.YYYYMMDD.Z summary`)。
+<!-- @END:CALVER -->
    - **Body 不限制 / 允許使用中文說明 (Permitted CJK, not forced)**：方便詳細說明變更脈絡與設計理據。
