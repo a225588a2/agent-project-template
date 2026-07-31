@@ -12,9 +12,9 @@
   - 全面升級 AI 專案模板至 v2.0 Production Edition。
   - 建立 **Skill 庫架構 ([[skills/]] 目錄)**，並將議會機制徹底 Skill 化 ([[skills/council/SKILL.md]])。
   - 導入 **「雙軌版本模式 (Dual Versioning Strategy)」**：模式 A (SemVer 2.0: `vMAJOR.MINOR.PATCH` + Conventional Commits + Gitflow) 與 模式 B (CalVer: `vYYYY.MM.DD` / `v1.0.YYYYMMDD.Z`)。
-  - 新增獨立 [[scripts/version_engine.py]] 模組採用策略模式 (Strategy Pattern) 解耦 Python 腳本邏輯。
-  - [[scripts/bootstrap.py]] 初始化支援 TTY 選單與 `--non-interactive` 下的**啟發式自動推斷 (Smart Auto-Detection)**，整合 Git Author 簽名檢查設定。
-  - 升級開工協定為 **「兩階段漸進式啟動 (Two-Stage Bootstrap Protocol)」** ([[plan/MEMORY.md]] 熱載入 + [[plan/TARGET.md]] / [[plan/AGENT.md]] 關鍵標籤與技能庫掃描)。
+  - 新增獨立 [[scripts/version_engine.py]] 模組採用策略模式解耦腳本邏輯。
+  - 完全重寫 [[scripts/bootstrap.py]]，導入 **未選定機制清理規範 (Cleanup Rule)**，透過 HTML 條件標記完美切割雙軌版本與專案說明。
+  - 升級開工協定為 **「兩階段漸進式啟動 (Two-Stage Bootstrap Protocol)」**，並確立「新專案初始化守則 (Agent Lazy Prompt 詢問)」。
   - 搬移冷歷史日誌至 [[plan/cold-history.log]]，讓 [[logs/]] 恢復為純選用暫存目錄。
   - 綜觀全局復原 [[README.md]] (造車公司比喻、目錄增減決策樹、Option A/B 啟動、Agent 一指 Prompt)。
   - 導入 **「單一寫入者原則 (Single Writer Rule)」** 限制 Sub-Agent 寫入權限，並實施 **「三維客觀 DoD 矩陣」**（Type A Markdown 檔名大小寫、內嵌 JSON/YAML/Mermaid 語法與禁止內部 `file:///` 連結校驗）。
@@ -23,6 +23,14 @@
 ---
 
 ## ⚡ 最近變更索引 (Recent Change Indexes - Last 3~5 Entries)
+
+### v1.0.3 feat(bootstrap): dual versioning cleanup and agent guardrails
+- **變更項目**：
+  * 實作未選定機制清理規範 (Cleanup Rule)，於 [[plan/GIT-GUIDE.md]]、[[plan/AGENT.md]] 及 [[README.md]] 植入條件標記。
+  * 重寫 [[scripts/bootstrap.py]] 實作條件標記渲染，徹底切割雙軌版本與專案說明的殘留。
+  * 更新 [[README.md]] 新增 Agent 專用惰性啟動提示詞 (Lazy Prompt)。
+  * 強化 Agent 新專案啟動護欄，強制於執行 bootstrap 前向使用者確認設定。
+  * 確立 `main` 分支必須使用附註標籤 (Annotated Tag) 撰寫發布重點，與 `develop` 必須強制快進同步 (`--ff-only`) 的雙主線紀律。
 
 ### v1.0.0 feat(template): upgrade template to v2.0 Production Edition with Skill Library and Dual Versioning
 - **變更項目**：

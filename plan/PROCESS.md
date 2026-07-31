@@ -6,8 +6,8 @@
 
 ## 目前狀態 (Current Status)
 
-- **當前進度**：[階段 1 完成，成功升級 AI 專案模板至 v2.0 Production Edition，全面導入雙軌版本模式與三維 DoD 檢驗關卡]
-- **目前版本**：v1.0.0
+- **當前進度**：[階段 1 完成，成功落實雙軌版本未選定機制清理 (Cleanup Rule)、重寫 bootstrap.py，並強化 Git 雙主線同步紀律與 Agent 啟動護欄]
+- **目前版本**：v1.0.3
 
 ---
 
@@ -16,8 +16,8 @@
 - [x] 建立通用專案骨架與必要核心目錄 ([[plan/]], [[doc/]], [[structure/]])。
 - [x] 建立並導入多 Agent 討論議會與協作規範 [[skills/council/SKILL.md]]。
 - [x] 實作 [[scripts/version_engine.py]] 策略模式版本引擎。
-- [x] 實作 [[scripts/bootstrap.py]] 雙軌版本策略選擇、非互動智慧推斷 (Smart Auto-Detection) 與 Git Author 簽名檢查。
-- [x] 升級 [[plan/AGENT.md]] 實施兩階段漸進式啟動、單一寫入者原則 (Single Writer Rule) 與三維 DoD 矩陣。
+- [x] 重寫 [[scripts/bootstrap.py]]，完整落實「雙軌版本未選定機制清理」與條件標記 (HTML Comments) 渲染。
+- [x] 強化 [[plan/AGENT.md]] 與 [[plan/GIT-GUIDE.md]] 護欄，強制 Agent 啟動前向使用者確認，並確立 `develop` 快進同步與 `main` 附註標籤 (Annotated Tag) 紀律。
 - [x] 升級 [[scripts/sync_project.py]] 與 [[scripts/git_hook_validator.py]] 支援 Type A Markdown 靜態 quality checks 與 Conventional Commits (Body 許中文)。
 - [x] 完成 Skill 庫架構建立與 Council Skill 化重構 ([[skills/council/SKILL.md]])。
 
